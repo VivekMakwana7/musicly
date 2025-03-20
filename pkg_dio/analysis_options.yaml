@@ -1,0 +1,16 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+linter: {
+  rules: {
+#    sort_pub_dependencies: false,
+    lines_longer_than_80_chars : false,
+  }
+}
+
+# You might want to exclude auto-generated files from dart analysis
+analyzer:
+  exclude:
+    - '**.freezed.dart'
+    - '**.g.dart'
+  errors:
+    invalid_annotation_target: ignore

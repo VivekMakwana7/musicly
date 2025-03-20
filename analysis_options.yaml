@@ -1,0 +1,19 @@
+#include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
+linter:
+  rules:
+    public_member_api_docs: true
+    sort_pub_dependencies: true
+    lines_longer_than_80_chars: false
+    one_member_abstracts: false
+    constant_identifier_names: false
+    always_use_package_imports: true
+    depend_on_referenced_packages: false
+    avoid_multiple_declarations_per_line: false
+analyzer:
+  exclude:
+    - '**.g.dart'
+    - '**.freezed.dart'
+    - lib/firebase_options*.dart
+  errors:
+    invalid_annotation_target: ignore
