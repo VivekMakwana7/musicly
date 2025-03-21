@@ -9,13 +9,10 @@ import 'package:musicly/widgets/album_item_widget.dart';
 /// Album Search Widget
 class AlbumSearchWidget extends StatelessWidget {
   /// Album Search Widget Constructor
-  const AlbumSearchWidget({super.key, this.albums = const [], this.isFromLocalDatabase = false});
+  const AlbumSearchWidget({super.key, this.albums = const []});
 
   /// List of album results to display in the search widget
   final List<GlobalAlbumModel> albums;
-
-  /// Hide View all option for DB data
-  final bool isFromLocalDatabase;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +25,7 @@ class AlbumSearchWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Albums', style: context.textTheme.titleMedium),
-            if (albums.length >= 3 && !isFromLocalDatabase)
+            if (albums.length >= 3)
               Text('View All', style: context.textTheme.titleSmall?.copyWith(color: const Color(0xFF11A8FD))),
           ],
         ),
@@ -48,9 +45,7 @@ class AlbumSearchWidget extends StatelessWidget {
               title: album.title ?? '',
               description: album.description ?? '',
               onTap: () {
-                if (!isFromLocalDatabase) {
-                  context.read<SearchCubit>().onAlbumItemTap(index);
-                }
+                context.read<SearchCubit>().onAlbumItemTap(index);
               },
             );
           },

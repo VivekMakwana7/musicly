@@ -4,10 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/src/search/cubit/search_cubit.dart';
 import 'package:musicly/src/search/model/album/global_album_model.dart';
 import 'package:musicly/src/search/model/artist/global_artist_model.dart';
+import 'package:musicly/src/search/model/play_list/global_play_list_model.dart';
 import 'package:musicly/src/search/model/song/global_song_model.dart';
 import 'package:musicly/src/search/model/top_trending/global_top_trending_model.dart';
 import 'package:musicly/src/search/widgets/album_search_widget.dart';
 import 'package:musicly/src/search/widgets/artist_search_widget.dart';
+import 'package:musicly/src/search/widgets/play_list_search_widget.dart';
 import 'package:musicly/src/search/widgets/song_search_widget.dart';
 import 'package:musicly/src/search/widgets/top_trending_search_widget.dart';
 
@@ -25,13 +27,15 @@ class SearchApiListingWidget extends StatelessWidget {
             selector: (state) => state.searchModel?.topTrending ?? [],
             builder: (context, topTrending) {
               if (topTrending.isNotEmpty) {
-                return TopTrendingSearchWidget(topTrendingList: topTrending);
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [TopTrendingSearchWidget(topTrendingList: topTrending), SizedBox(height: 20.h)],
+                );
               }
 
               return const SizedBox.shrink();
             },
           ),
-          SizedBox(height: 20.h),
           BlocSelector<SearchCubit, SearchState, List<GlobalSongModel>>(
             selector: (state) => state.searchModel?.songs ?? [],
             builder: (context, songs) {
@@ -46,22 +50,38 @@ class SearchApiListingWidget extends StatelessWidget {
             selector: (state) => state.searchModel?.albums ?? [],
             builder: (context, albums) {
               if (albums.isNotEmpty) {
-                return AlbumSearchWidget(albums: albums);
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [AlbumSearchWidget(albums: albums), SizedBox(height: 20.h)],
+                );
               }
               return const SizedBox.shrink();
             },
           ),
-          SizedBox(height: 20.h),
           BlocSelector<SearchCubit, SearchState, List<GlobalArtistModel>>(
             selector: (state) => state.searchModel?.artists ?? [],
             builder: (context, artists) {
               if (artists.isNotEmpty) {
-                return ArtistSearchWidget(artists: artists);
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [ArtistSearchWidget(artists: artists), SizedBox(height: 20.h)],
+                );
               }
               return const SizedBox.shrink();
             },
           ),
-          SizedBox(height: 20.h),
+          BlocSelector<SearchCubit, SearchState, List<GlobalPlayListModel>>(
+            selector: (state) => state.searchModel?.playlists ?? [],
+            builder: (context, playlists) {
+              if (playlists.isNotEmpty) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [PlayListSearchWidget(playlists: playlists), SizedBox(height: 20.h)],
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ],
       ),
     );

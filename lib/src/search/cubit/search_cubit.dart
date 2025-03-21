@@ -79,27 +79,35 @@ class SearchCubit extends Cubit<SearchState> {
 
   /// on top trendy item tap
   void onTopTrendyItemTap(int index) {
-    final item = state.searchModel!.topTrending[index];
-    _handleSearchHistory(item.toSearchHistoryModel());
+    if (state.searchModel != null) {
+      final item = state.searchModel!.topTrending[index];
+      _handleSearchHistory(item.toSearchHistoryModel());
+    }
   }
 
   /// on Song Item Tap
   void onSongItemTap(int index) {
-    final item = state.searchModel!.songs[index];
-    _handleSearchHistory(item.toSearchHistoryModel());
-    _handleRecentPlayedSong(item.toRecentPlayedSongModel());
+    if (state.searchModel != null) {
+      final item = state.searchModel!.songs[index];
+      _handleSearchHistory(item.toSearchHistoryModel());
+      _handleRecentPlayedSong(item.toRecentPlayedSongModel());
+    }
   }
 
   /// on Album Item Tap
   void onAlbumItemTap(int index) {
-    final item = state.searchModel!.albums[index];
-    _handleSearchHistory(item.toSearchHistoryModel());
+    if (state.searchModel != null) {
+      final item = state.searchModel!.albums[index];
+      _handleSearchHistory(item.toSearchHistoryModel());
+    }
   }
 
   /// on Artist Item Tap
   void onArtistItemTap(int index) {
-    final item = state.searchModel!.artists[index];
-    _handleSearchHistory(item.toSearchHistoryModel());
+    if (state.searchModel != null) {
+      final item = state.searchModel!.artists[index];
+      _handleSearchHistory(item.toSearchHistoryModel());
+    }
   }
 
   void _handleSearchHistory(SearchHistoryModel item) {
@@ -115,5 +123,13 @@ class SearchCubit extends Cubit<SearchState> {
   /// For handle Clear API Search and Clear field
   void onClearFieldTap() {
     searchController.clear();
+  }
+
+  /// on Playlist Item Tap
+  void onPlaylistItemTap(int index) {
+    if (state.searchModel != null) {
+      final item = state.searchModel!.playlists[index];
+      _handleSearchHistory(item.toSearchHistoryModel());
+    }
   }
 }

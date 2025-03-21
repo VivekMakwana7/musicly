@@ -39,11 +39,11 @@ class SearchDataBaseListingWidget extends StatelessWidget {
             SizedBox(height: 20.h),
           ],
           if (appDb.albumSearchHistory.isNotEmpty) ...[
-            AlbumSearchWidget(albums: appDb.albumSearchHistory, isFromLocalDatabase: true),
+            AlbumSearchWidget(albums: appDb.albumSearchHistory),
             SizedBox(height: 20.h),
           ],
           if (appDb.artistSearchHistory.isNotEmpty) ...[
-            ArtistSearchWidget(artists: appDb.artistSearchHistory, isFromLocalDatabase: true),
+            ArtistSearchWidget(artists: appDb.artistSearchHistory),
             SizedBox(height: 20.h),
           ],
         ],

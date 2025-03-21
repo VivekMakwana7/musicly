@@ -8,8 +8,6 @@ import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/src/search/model/album/global_album_model.dart';
 import 'package:musicly/src/search/model/artist/global_artist_model.dart';
 import 'package:musicly/src/search/model/image/image_response_model.dart';
-import 'package:musicly/src/search/model/playlist_model.dart';
-import 'package:musicly/src/search/model/result_image_model.dart';
 import 'package:musicly/src/search/model/song/global_song_model.dart';
 
 /// to store local data
@@ -120,20 +118,20 @@ class AppDB {
           .toList();
 
   /// Filter Search History and get Play Result List
-  List<PlayListResultModel> get playlistSearchHistory =>
-      searchHistory
-          .where((element) => element.type == SearchItemType.playlist)
-          .map(
-            (e) => PlayListResultModel(
-              id: e.id,
-              title: e.title,
-              description: e.descripiton,
-              image: e.images?.map((ele) => ResultImageModel(quality: ele.quality, url: ele.url)).toList(),
-              url: e.url,
-            ),
-          )
-          .take(10)
-          .toList();
+  // List<PlayListResultModel> get playlistSearchHistory =>
+  //     searchHistory
+  //         .where((element) => element.type == SearchItemType.playlist)
+  //         .map(
+  //           (e) => PlayListResultModel(
+  //             id: e.id,
+  //             title: e.title,
+  //             description: e.descripiton,
+  //             image: e.images?.map((ele) => ResultImageModel(quality: ele.quality, url: ele.url)).toList(),
+  //             url: e.url,
+  //           ),
+  //         )
+  //         .take(10)
+  //         .toList();
 
   /// to get Recent Played Song List
   List<RecentPlayedSongModel> get recentPlayedSongList {

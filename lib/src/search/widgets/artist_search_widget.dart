@@ -9,13 +9,10 @@ import 'package:musicly/widgets/artist_item_widget.dart';
 /// Artist Search Widget
 class ArtistSearchWidget extends StatelessWidget {
   /// Artist Search Widget Constructor
-  const ArtistSearchWidget({super.key, this.artists = const [], this.isFromLocalDatabase = false});
+  const ArtistSearchWidget({super.key, this.artists = const []});
 
   /// List of artist
   final List<GlobalArtistModel> artists;
-
-  /// Hide View all option for DB data
-  final bool isFromLocalDatabase;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +25,7 @@ class ArtistSearchWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Artists', style: context.textTheme.titleMedium),
-            if (artists.length >= 3 && !isFromLocalDatabase)
+            if (artists.length >= 3)
               Text('View All', style: context.textTheme.titleSmall?.copyWith(color: const Color(0xFF11A8FD))),
           ],
         ),
@@ -47,9 +44,7 @@ class ArtistSearchWidget extends StatelessWidget {
               artistImageURL: artist.image?.last.url ?? '',
               artistName: artist.title ?? '',
               onTap: () {
-                if (!isFromLocalDatabase) {
-                  context.read<SearchCubit>().onArtistItemTap(index);
-                }
+                context.read<SearchCubit>().onArtistItemTap(index);
               },
             );
           },
