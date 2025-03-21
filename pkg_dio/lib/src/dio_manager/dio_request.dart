@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart' show FocusManager, immutable;
 import 'package:pkg_dio/pkg_dio.dart';
+import 'package:pkg_dio/src/dio_manager/logger.dart';
 
 /// generic json mapper
 typedef JsonMapper<T> = T Function(Map<String, dynamic>);
@@ -25,6 +26,7 @@ class DioRequest<T> {
     this.receiveProgress,
     this.sendProgress,
     this.hideKeyboard = true,
+    this.pathParameter,
   })  : assert(jsonMapper != null || listJsonMapper != null, 'Provide at least one json mapper!'),
         assert(jsonMapper == null || listJsonMapper == null, 'Can not provide both json mapper!');
 
@@ -61,6 +63,9 @@ class DioRequest<T> {
   /// close keyboard
   final bool hideKeyboard;
 
+  /// For Append path Param to URL
+  final String? pathParameter;
+
   /// GET method
   Future<ApiResult<T>> get() => _requestCall('GET');
 
@@ -82,8 +87,12 @@ class DioRequest<T> {
       if (cancelToken?.isCancelled ?? false) {
         return const ApiResult.error(exception: ApiException(code: -1, message: 'Request Cancelled'));
       }
+      var urlPath = path;
+      if (pathParameter != null) {
+        urlPath = '$path/${pathParameter!}';
+      }
       final response = await dio.request<dynamic>(
-        path,
+        urlPath,
         options: (options ?? Options())..method = method,
         queryParameters: params,
         data: data,
@@ -91,28 +100,10 @@ class DioRequest<T> {
         onReceiveProgress: receiveProgress,
         onSendProgress: sendProgress,
       );
-      /*final response = await Isolate.run(
-        () {
-          return dio.request<dynamic>(
-            path,
-            options: (options ?? Options())..method = method,
-            queryParameters: params,
-            data: data,
-            cancelToken: cancelToken,
-            onReceiveProgress: receiveProgress,
-          );
-        },
-      );*/
+
+      'response : ${response.data}'.logD;
       return _responseHandler(response);
     } on DioException catch (ex) {
-      // Logger().e(ex.type);
-      // Logger().e(ex.message);
-      // Logger().e(ex.response?.statusCode);
-      // 'path $path'.logFatal;
-      // 'data $data'.logFatal;
-      // '${ex.response?.statusCode}'.logFatal;
-      // '${ex.response?.data}'.logFatal;
-      // '${ex.error}'.logFatal;
       return ApiResult.error(exception: ex.toApiException);
     } on Object catch (ex) {
       return ApiResult.error(exception: ApiException(code: -1, message: ex.toString()));

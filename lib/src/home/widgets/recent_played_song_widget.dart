@@ -19,7 +19,7 @@ class RecentPlayedSongWidget extends StatelessWidget {
     return StreamBuilder(
       stream: cubit.recentPlayedStream,
       builder: (_, _) {
-        final recentPlayedSongs = Injector.instance<AppDB>().recentPlayedSongList.take(10);
+        final recentPlayedSongs = Injector.instance<AppDB>().recentPlayedSong;
         if (recentPlayedSongs.isEmpty) {
           return const SizedBox();
         }
@@ -39,7 +39,7 @@ class RecentPlayedSongWidget extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 itemBuilder: (context, index) {
                   final song = recentPlayedSongs.elementAt(index);
-                  return RecentPlayedItemWidget(title: song.title, songImageURL: song.images?.last.url ?? '');
+                  return RecentPlayedItemWidget(title: song.name ?? '', songImageURL: song.image?.last.url ?? '');
                 },
                 separatorBuilder: (context, index) => SizedBox(width: 16.w),
                 itemCount: recentPlayedSongs.length,

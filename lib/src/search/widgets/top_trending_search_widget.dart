@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
-import 'package:musicly/src/search/cubit/search_cubit.dart';
 import 'package:musicly/src/search/model/top_trending/global_top_trending_model.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
 import 'package:musicly/widgets/artist_item_widget.dart';
@@ -40,6 +39,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                     child: ArtistItemWidget(
                       artistImageURL: topTrending.image?.last.url ?? '',
                       artistName: topTrending.title ?? '',
+                      onTap: () => DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name),
                     ),
                   ),
                 ),
@@ -52,6 +52,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                       title: topTrending.title ?? '',
                       albumImageURL: topTrending.image?.last.url ?? '',
                       description: topTrending.description ?? '',
+                      onTap: () => DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name),
                     ),
                   ),
                 ),
@@ -59,7 +60,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                   description: topTrending.description ?? '',
                   songImageURL: topTrending.image?.last.url ?? '',
                   title: topTrending.title ?? '',
-                  onTap: () => context.read<SearchCubit>().onTopTrendyItemTap(index),
+                  onTap: () => DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name),
                 ),
               };
             },

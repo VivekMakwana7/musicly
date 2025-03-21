@@ -1,6 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:musicly/core/db/models/image_model.dart';
-import 'package:musicly/core/db/models/search_history_model.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/src/search/model/image/image_response_model.dart';
 
@@ -12,7 +10,7 @@ part 'global_top_trending_model.g.dart';
 sealed class GlobalTopTrendingModel with _$GlobalTopTrendingModel {
   /// Factory Constructor
   const factory GlobalTopTrendingModel({
-    @JsonKey(name: 'id') String? id,
+    @JsonKey(name: 'id') required String id,
     @JsonKey(name: 'title') String? title,
     @JsonKey(name: 'image') List<ImageResponseModel>? image,
     @JsonKey(name: 'album') String? album,
@@ -28,16 +26,6 @@ sealed class GlobalTopTrendingModel with _$GlobalTopTrendingModel {
 
   /// Factory constructor for from json
   factory GlobalTopTrendingModel.fromJson(Map<String, Object?> json) => _$GlobalTopTrendingModelFromJson(json);
-
-  /// Convert to Search History Model
-  SearchHistoryModel toSearchHistoryModel() {
-    return SearchHistoryModel(
-      id: id!,
-      title: title!,
-      type: SearchItemType.song,
-      images: image?.map((e) => ImageModel(quality: e.quality, url: e.url)).toList(),
-    );
-  }
 }
 
 /// Get Search Item type based on type

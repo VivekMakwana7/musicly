@@ -5,6 +5,7 @@ import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/src/search/widgets/album_search_widget.dart';
 import 'package:musicly/src/search/widgets/artist_search_widget.dart';
+import 'package:musicly/src/search/widgets/play_list_search_widget.dart';
 import 'package:musicly/src/search/widgets/song_search_widget.dart';
 
 /// Search data base listing widget
@@ -16,7 +17,7 @@ class SearchDataBaseListingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final appDb = Injector.instance<AppDB>();
 
-    if (appDb.searchHistory.isEmpty) {
+    if (appDb.isHistoryEmpty) {
       return Expanded(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -35,15 +36,19 @@ class SearchDataBaseListingWidget extends StatelessWidget {
       child: ListView(
         children: [
           if (appDb.songSearchHistory.isNotEmpty) ...[
-            SongSearchWidget(songs: appDb.songSearchHistory),
+            SongSearchWidget.fromDatabase(appDb.songSearchHistory),
             SizedBox(height: 20.h),
           ],
           if (appDb.albumSearchHistory.isNotEmpty) ...[
-            AlbumSearchWidget(albums: appDb.albumSearchHistory),
+            AlbumSearchWidget.fromDatabase(appDb.albumSearchHistory),
             SizedBox(height: 20.h),
           ],
           if (appDb.artistSearchHistory.isNotEmpty) ...[
-            ArtistSearchWidget(artists: appDb.artistSearchHistory),
+            ArtistSearchWidget.fromDatabase(appDb.artistSearchHistory),
+            SizedBox(height: 20.h),
+          ],
+          if (appDb.playlistSearchHistory.isNotEmpty) ...[
+            PlayListSearchWidget.fromDatabase(appDb.playlistSearchHistory),
             SizedBox(height: 20.h),
           ],
         ],

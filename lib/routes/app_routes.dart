@@ -25,4 +25,13 @@ final class AppRoutes {
 
   /// The route path for the search song screen.
   static const String searchSongPage = 'search-song-page';
+
+  /// The route path for the search album screen
+  static const String searchAlbumPage = 'search-album-page';
+
+  /// The route path for the search artist screen
+  static const String searchArtistPage = 'search-artist-page';
+
+  /// The route path for the search playlist screen
+  static const String searchPlaylistPage = 'search-playlist-page';
 }

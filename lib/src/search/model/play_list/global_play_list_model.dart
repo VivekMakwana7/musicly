@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:musicly/core/db/models/image_model.dart';
+import 'package:musicly/core/db/models/image/image_model.dart';
 import 'package:musicly/core/db/models/search_history_model.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/src/search/model/image/image_response_model.dart';
@@ -30,7 +30,7 @@ sealed class GlobalPlayListModel with _$GlobalPlayListModel {
   /// Convert to Search History Model
   SearchHistoryModel toSearchHistoryModel() {
     return SearchHistoryModel(
-      id: id!,
+      id: id,
       title: title ?? '',
       images: image?.map((e) => ImageModel(quality: e.quality, url: e.url)).toList(),
       type: SearchItemType.playlist,

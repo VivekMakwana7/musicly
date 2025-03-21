@@ -5,7 +5,10 @@ import 'package:musicly/core/logger.dart';
 import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_page.dart';
 import 'package:musicly/src/liked/liked_page.dart';
-import 'package:musicly/src/search/pages/search_song_page.dart';
+import 'package:musicly/src/search/pages/album/search_album_page.dart';
+import 'package:musicly/src/search/pages/artist/search_artist_page.dart';
+import 'package:musicly/src/search/pages/playlist/search_playlist_page.dart';
+import 'package:musicly/src/search/pages/song/search_song_page.dart';
 import 'package:musicly/src/search/search_page.dart';
 import 'package:musicly/widgets/bottom_nav/bottom_nav.dart';
 
@@ -36,6 +39,30 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) {
         final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
         return MaterialPage(key: state.pageKey, child: SearchSongPage(query: query));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.searchAlbumPage.navPath,
+      name: AppRoutes.searchAlbumPage,
+      pageBuilder: (context, state) {
+        final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
+        return MaterialPage(key: state.pageKey, child: SearchAlbumPage(query: query));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.searchArtistPage.navPath,
+      name: AppRoutes.searchArtistPage,
+      pageBuilder: (context, state) {
+        final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
+        return MaterialPage(key: state.pageKey, child: SearchArtistPage(query: query));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.searchPlaylistPage.navPath,
+      name: AppRoutes.searchPlaylistPage,
+      pageBuilder: (context, state) {
+        final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
+        return MaterialPage(key: state.pageKey, child: SearchPlaylistPage(query: query));
       },
     ),
   ],
