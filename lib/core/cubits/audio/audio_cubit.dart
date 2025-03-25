@@ -160,14 +160,26 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   /// Sets audio source from network based on type
-  void setNetworkSource({required SourceType type, required String query, String? songId, int page = 0}) {
+  void setNetworkSource({
+    required SourceType type,
+    required String query,
+    String? songId,
+    int page = 0,
+    List<DbSongModel>? sources,
+  }) {
     _type = type;
     _query = query;
     _page = page;
 
     switch (type) {
       case SourceType.searchSong:
-        _searchSongs(query: query, page: page, songId: songId);
+        if (sources == null) {
+          _searchSongs(query: query, page: page, songId: songId);
+        } else {
+          emit(state.copyWith(songSources: sources));
+          final currentIndex = state.songSources.indexWhere((element) => element.id == songId);
+          _playSongAtIndex(currentIndex);
+        }
       case SourceType.searchAlbumSong:
       // TODO: Implement album song search
       case SourceType.searchPlaylistSong:

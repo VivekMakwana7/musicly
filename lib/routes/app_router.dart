@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/logger.dart';
+import 'package:musicly/src/album/album_detail/album_detail_page.dart';
 import 'package:musicly/src/album/search_album_page.dart';
 import 'package:musicly/src/artist/search_artist_page.dart';
 import 'package:musicly/src/home/home_page.dart';
@@ -63,6 +64,14 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) {
         final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
         return MaterialPage(key: state.pageKey, child: SearchPlaylistPage(query: query));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.albumDetailPage.navPath,
+      name: AppRoutes.albumDetailPage,
+      pageBuilder: (context, state) {
+        final albumId = (state.extra! as Map<String, dynamic>)['albumId'] as String;
+        return MaterialPage(key: state.pageKey, child: AlbumDetailPage(albumId: albumId));
       },
     ),
   ],

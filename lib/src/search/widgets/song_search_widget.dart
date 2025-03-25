@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
@@ -68,7 +67,11 @@ class SongSearchWidget extends StatelessWidget {
                   songImageURL: song.image?.last.url ?? '',
                   title: song.title ?? '',
                   onTap: () {
-                    DatabaseHandler.appendToDb(id: song.id, type: song.type ?? 'song');
+                    Injector.instance<AudioCubit>().setNetworkSource(
+                      type: SourceType.searchSong,
+                      query: query ?? '',
+                      songId: song.id,
+                    );
                   },
                 );
               },

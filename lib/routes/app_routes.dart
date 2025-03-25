@@ -34,4 +34,7 @@ final class AppRoutes {
 
   /// The route path for the search playlist screen
   static const String searchPlaylistPage = 'search-playlist-page';
+
+  /// The route path for the Album detail screen
+  static const String albumDetailPage = 'album-detail-page';
 }

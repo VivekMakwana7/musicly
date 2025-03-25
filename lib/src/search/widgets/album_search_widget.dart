@@ -91,7 +91,9 @@ class AlbumSearchWidget extends StatelessWidget {
                 albumImageURL: album.image?.last.url ?? '',
                 title: album.name ?? '',
                 description: album.description ?? '',
-                onTap: () => DatabaseHandler.appendToDb(id: album.id, type: album.type ?? 'album'),
+                onTap: () {
+                  context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': album.id});
+                },
               );
             },
             itemCount: dbAlbums!.take(minDbAlbumCountForDisplay).length,
