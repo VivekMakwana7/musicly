@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/enums/api_state.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/playlist/cubit/search_playlist_cubit.dart';
 import 'package:musicly/src/song/widgets/search_song_loading_widget.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
@@ -36,6 +38,9 @@ class SearchPlaylistPage extends StatelessWidget {
                       description: playlist.description ?? '',
                       songImageURL: playlist.image?.first.url ?? '',
                       title: playlist.name ?? '',
+                      onTap: () {
+                        context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
+                      },
                     );
                   },
                   separatorBuilder: (context, index) => SizedBox(height: 16.h),

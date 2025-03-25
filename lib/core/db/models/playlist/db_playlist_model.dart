@@ -21,7 +21,7 @@ sealed class DbPlaylistModel extends HiveObject with _$DbPlaylistModel {
     @JsonKey(name: 'explicitContent') bool? explicitContent,
     @JsonKey(name: 'url') String? url,
     @JsonKey(name: 'songCount') int? songCount,
-    @JsonKey(name: 'artists') List<DbSongArtist>? artists,
+    @JsonKey(name: 'artists') List<DbSongPrimaryArtist>? artists,
     @JsonKey(name: 'image') List<ImageModel>? image,
     @JsonKey(name: 'songs') List<DbSongModel>? songs,
   }) = _DbPlaylistModel;

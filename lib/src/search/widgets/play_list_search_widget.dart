@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
-import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/routes/app_router.dart';
@@ -64,7 +63,9 @@ class PlayListSearchWidget extends StatelessWidget {
                   description: playlist.description ?? '',
                   songImageURL: playlist.image?.last.url ?? '',
                   title: playlist.title ?? '',
-                  onTap: () => DatabaseHandler.appendToDb(type: playlist.type ?? 'playlist', id: playlist.id),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
+                  },
                 );
               },
               separatorBuilder: (context, index) => SizedBox(height: 16.h),
@@ -82,6 +83,9 @@ class PlayListSearchWidget extends StatelessWidget {
                   description: playlist.description ?? '',
                   songImageURL: playlist.image?.last.url ?? '',
                   title: playlist.name ?? '',
+                  onTap: () {
+                    context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
+                  },
                 );
               },
               separatorBuilder: (context, index) => SizedBox(height: 16.h),

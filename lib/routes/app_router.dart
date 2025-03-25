@@ -9,6 +9,7 @@ import 'package:musicly/src/artist/search_artist_page.dart';
 import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_page.dart';
 import 'package:musicly/src/liked/liked_page.dart';
+import 'package:musicly/src/playlist/playlist_detail/playlist_detail_page.dart';
 import 'package:musicly/src/playlist/search_playlist_page.dart';
 import 'package:musicly/src/search/search_page.dart';
 import 'package:musicly/src/song/search_song_page.dart';
@@ -81,6 +82,14 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) {
         final artistId = (state.extra! as Map<String, dynamic>)['artistId'] as String;
         return MaterialPage(key: state.pageKey, child: ArtistDetailPage(artistId: artistId));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.playlistDetailPage.navPath,
+      name: AppRoutes.playlistDetailPage,
+      pageBuilder: (context, state) {
+        final playlistId = (state.extra! as Map<String, dynamic>)['playlistId'] as String;
+        return MaterialPage(key: state.pageKey, child: PlaylistDetailPage(playlistId: playlistId));
       },
     ),
   ],
