@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
-import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/album/db_album_model.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/routes/app_router.dart';
@@ -70,7 +69,9 @@ class AlbumSearchWidget extends StatelessWidget {
                 albumImageURL: album.image?.last.url ?? '',
                 title: album.title ?? '',
                 description: album.description ?? '',
-                onTap: () => DatabaseHandler.appendToDb(id: album.id, type: album.type ?? 'album'),
+                onTap: () {
+                  context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': album.id});
+                },
               );
             },
             itemCount: globalAlbums!.length,

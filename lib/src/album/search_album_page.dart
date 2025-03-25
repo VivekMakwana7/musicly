@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/enums/api_state.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/album/cubit/search_album_cubit.dart';
 import 'package:musicly/src/album/widgets/search_album_loading_widget.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
@@ -39,8 +41,11 @@ class SearchAlbumPage extends StatelessWidget {
                     final album = state.albums[index];
                     return AlbumItemWidget(
                       description: album.description ?? '',
-                      albumImageURL: album.image?.first.url ?? '',
+                      albumImageURL: album.image?.last.url ?? '',
                       title: album.name ?? '',
+                      onTap: () {
+                        context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': album.id});
+                      },
                     );
                   },
                   itemCount: state.albums.length,
