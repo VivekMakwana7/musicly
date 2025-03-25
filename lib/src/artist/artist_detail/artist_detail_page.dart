@@ -11,6 +11,7 @@ import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/artist/artist_detail/cubit/artist_detail_cubit.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
 import 'package:musicly/widgets/app_back_button.dart';
+import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -406,6 +407,7 @@ class ArtistDetailPage extends StatelessWidget {
             ),
           ),
         ),
+        bottomNavigationBar: const AudioWidget(),
       ),
     );
   }

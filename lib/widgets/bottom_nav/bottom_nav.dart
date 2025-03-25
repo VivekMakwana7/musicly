@@ -21,21 +21,21 @@ class BottomNav extends StatelessWidget {
       create: (context) => BottomNavCubit(),
       child: Scaffold(
         body: child,
-        bottomNavigationBar: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF353A40), Color(0xFF32373D), Color(0xFF23282C)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
-          ),
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const AudioWidget(),
-                Padding(
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AudioWidget(),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF353A40), Color(0xFF32373D), Color(0xFF23282C)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r)),
+              ),
+              child: SafeArea(
+                child: Padding(
                   padding: EdgeInsets.all(16.w),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -66,9 +66,9 @@ class BottomNav extends StatelessWidget {
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

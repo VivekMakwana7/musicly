@@ -10,6 +10,7 @@ import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/src/album/album_detail/cubit/album_detail_cubit.dart';
 import 'package:musicly/widgets/app_back_button.dart';
 import 'package:musicly/widgets/artist_item_widget.dart';
+import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -221,9 +222,11 @@ class AlbumDetailPage extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Songs',
-                                      style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight),
+                                    Skeletonizer(
+                                      child: Text(
+                                        'Songs',
+                                        style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight),
+                                      ),
                                     ),
                                     SizedBox(height: 12.h),
                                     ListView.separated(
@@ -278,9 +281,11 @@ class AlbumDetailPage extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 30.h),
-                            Text(
-                              'Artists',
-                              style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight),
+                            Skeletonizer(
+                              child: Text(
+                                'Artists',
+                                style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight),
+                              ),
                             ),
                             SizedBox(height: 12.h),
                             GridView.builder(
@@ -314,6 +319,7 @@ class AlbumDetailPage extends StatelessWidget {
             ),
           ),
         ),
+        bottomNavigationBar: const AudioWidget(),
       ),
     );
   }
