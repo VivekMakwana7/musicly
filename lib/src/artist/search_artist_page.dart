@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/artist/cubit/search_artist_cubit.dart';
 import 'package:musicly/src/artist/widgets/search_artist_loading_widget.dart';
 import 'package:musicly/widgets/artist_item_widget.dart';
+import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 
 /// Search Artist Page
 class SearchArtistPage extends StatelessWidget {
@@ -41,6 +44,9 @@ class SearchArtistPage extends StatelessWidget {
                     return ArtistItemWidget(
                       artistImageURL: artist.image?.first.url ?? '',
                       artistName: artist.name ?? '',
+                      onTap: () {
+                        context.pushNamed(AppRoutes.artistDetailPage, extra: {'artistId': artist.id});
+                      },
                     );
                   },
                   itemCount: state.artists.length,
@@ -50,6 +56,7 @@ class SearchArtistPage extends StatelessWidget {
             };
           },
         ),
+        bottomNavigationBar: const AudioWidget(),
       ),
     );
   }

@@ -58,17 +58,18 @@ class AlbumItemWidget extends StatelessWidget {
                     Flexible(
                       child: Text(
                         title,
-                        maxLines: 1,
+                        maxLines: description.isEmpty ? 2 : 1,
                         overflow: TextOverflow.ellipsis,
                         style: context.textTheme.bodyMedium,
                       ),
                     ),
-                    Text(
-                      description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
-                    ),
+                    if (description.isNotEmpty)
+                      Text(
+                        description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                      ),
                   ],
                 ),
               ),

@@ -89,17 +89,19 @@ class ArtistDetailPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 12.h),
-                            Text(
-                              artist?.bio?.first.text ?? '',
-                              style: context.textTheme.titleSmall?.copyWith(
-                                height: 1.1,
-                                color: const Color(0xFF989CA0),
-                                fontStyle: FontStyle.italic,
+                            if (artist?.bio != null && artist!.bio!.isNotEmpty) ...[
+                              SizedBox(height: 12.h),
+                              Text(
+                                artist.bio?.first.text ?? '',
+                                style: context.textTheme.titleSmall?.copyWith(
+                                  height: 1.1,
+                                  color: const Color(0xFF989CA0),
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
-                            ),
+                            ],
 
-                            if (artist?.topSongs != null) ...[
+                            if (artist?.topSongs != null && artist!.topSongs!.isNotEmpty) ...[
                               SizedBox(height: 30.h),
                               DecoratedBox(
                                 decoration: BoxDecoration(
@@ -169,7 +171,7 @@ class ArtistDetailPage extends StatelessWidget {
                                           );
                                         },
                                         separatorBuilder: (context, index) => SizedBox(height: 10.h),
-                                        itemCount: artist!.topSongs!.length,
+                                        itemCount: artist.topSongs!.length,
                                       ),
                                     ],
                                   ),
@@ -177,7 +179,7 @@ class ArtistDetailPage extends StatelessWidget {
                               ),
                             ],
 
-                            if (artist?.topAlbums != null) ...[
+                            if (artist?.topAlbums != null && artist!.topAlbums!.isNotEmpty) ...[
                               SizedBox(height: 30.h),
                               const Text('Top Albums'),
                               SizedBox(height: 12.h),
@@ -200,7 +202,7 @@ class ArtistDetailPage extends StatelessWidget {
                                     );
                                   },
                                   separatorBuilder: (context, index) => SizedBox(width: 12.w),
-                                  itemCount: artist!.topAlbums!.length,
+                                  itemCount: artist.topAlbums!.length,
                                 ),
                               ),
                             ],
@@ -226,7 +228,6 @@ class ArtistDetailPage extends StatelessWidget {
                                 ),
                               ),
                             ),
-
                             SizedBox(height: 30.h),
                           ],
                         ),

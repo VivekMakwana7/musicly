@@ -7,6 +7,7 @@ import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/album/cubit/search_album_cubit.dart';
 import 'package:musicly/src/album/widgets/search_album_loading_widget.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
+import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 
 /// Search Song Page
 class SearchAlbumPage extends StatelessWidget {
@@ -55,6 +56,7 @@ class SearchAlbumPage extends StatelessWidget {
             };
           },
         ),
+        bottomNavigationBar: const AudioWidget(),
       ),
     );
   }
