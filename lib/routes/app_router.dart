@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/logger.dart';
+import 'package:musicly/src/album/search_album_page.dart';
+import 'package:musicly/src/artist/search_artist_page.dart';
 import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_page.dart';
 import 'package:musicly/src/liked/liked_page.dart';
-import 'package:musicly/src/search/pages/album/search_album_page.dart';
-import 'package:musicly/src/search/pages/artist/search_artist_page.dart';
-import 'package:musicly/src/search/pages/playlist/search_playlist_page.dart';
-import 'package:musicly/src/search/pages/song/search_song_page.dart';
+import 'package:musicly/src/playlist/search_playlist_page.dart';
 import 'package:musicly/src/search/search_page.dart';
+import 'package:musicly/src/song/search_song_page.dart';
 import 'package:musicly/widgets/bottom_nav/bottom_nav.dart';
 
 part 'app_routes.dart';

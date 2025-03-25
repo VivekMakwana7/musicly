@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/enums/api_state.dart';
-import 'package:musicly/src/search/pages/playlist/cubit/search_playlist_cubit.dart';
-import 'package:musicly/src/search/pages/song/widgets/search_song_loading_widget.dart';
+import 'package:musicly/src/playlist/cubit/search_playlist_cubit.dart';
+import 'package:musicly/src/song/widgets/search_song_loading_widget.dart';
 import 'package:musicly/widgets/song_item_widget.dart';
 
 /// Search Playlist page

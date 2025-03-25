@@ -4,11 +4,11 @@ import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
 import 'package:musicly/core/rest_utils/endpoints.dart';
+import 'package:musicly/src/album/models/search_album_response_model.dart';
+import 'package:musicly/src/artist/models/search_artist_response_model.dart';
+import 'package:musicly/src/playlist/models/search_playlist_response_model.dart';
 import 'package:musicly/src/search/model/global_search_model.dart';
-import 'package:musicly/src/search/pages/album/models/search_album_response_model.dart';
-import 'package:musicly/src/search/pages/artist/models/search_artist_response_model.dart';
-import 'package:musicly/src/search/pages/playlist/models/search_playlist_response_model.dart';
-import 'package:musicly/src/search/pages/song/models/search_song_response_model.dart';
+import 'package:musicly/src/song/models/search_song_response_model.dart';
 import 'package:pkg_dio/pkg_dio.dart';
 
 /// Repository for search related operations

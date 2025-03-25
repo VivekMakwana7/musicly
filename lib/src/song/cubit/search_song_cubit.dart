@@ -8,7 +8,7 @@ import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/paginated/paginated_cubit.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
 import 'package:musicly/repos/search_repository.dart';
-import 'package:musicly/src/search/pages/song/search_song_page.dart';
+import 'package:musicly/src/song/search_song_page.dart';
 
 part 'search_song_state.dart';
 

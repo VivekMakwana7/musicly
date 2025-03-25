@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
-import 'package:musicly/src/search/pages/artist/cubit/search_artist_cubit.dart';
-import 'package:musicly/src/search/pages/artist/widgets/search_artist_loading_widget.dart';
+import 'package:musicly/src/artist/cubit/search_artist_cubit.dart';
+import 'package:musicly/src/artist/widgets/search_artist_loading_widget.dart';
 import 'package:musicly/widgets/artist_item_widget.dart';
 
 /// Search Artist Page

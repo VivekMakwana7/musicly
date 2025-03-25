@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:musicly/core/db/app_db.dart';
-import 'package:musicly/core/db/models/artist/db_artist_model.dart';
+import 'package:musicly/core/db/models/album/db_album_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
@@ -8,16 +8,16 @@ import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/paginated/paginated_cubit.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
 import 'package:musicly/repos/search_repository.dart';
-import 'package:musicly/src/search/pages/artist/search_artist_page.dart';
+import 'package:musicly/src/album/search_album_page.dart';
 
-part 'search_artist_state.dart';
+part 'search_album_state.dart';
 
-/// For handle [SearchArtistPage]'s state
-class SearchArtistCubit extends PaginatedCubit<SearchArtistState> {
+/// For handle [SearchAlbumPage]'s state
+class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
   /// Default constructor
-  SearchArtistCubit({this.query}) : super(const SearchArtistState());
+  SearchAlbumCubit({this.query}) : super(const SearchAlbumState());
 
-  /// The search query used to find these artist (if applicable).
+  /// For search albums
   final String? query;
 
   final _appDb = Injector.instance<AppDB>();
@@ -27,28 +27,24 @@ class SearchArtistCubit extends PaginatedCubit<SearchArtistState> {
   ApiState get apiState => state.apiState;
 
   @override
-  int get limit => 24;
-
-  @override
   Future<void> getData() async {
     if (query != null) {
-      emit(state.copyWith(apiState: state.artists.isEmpty ? ApiState.loading : ApiState.loadingMore));
+      emit(state.copyWith(apiState: state.albums.isEmpty ? ApiState.loading : ApiState.loadingMore));
       final param = {'query': query, 'page': page, 'limit': limit};
-      final res = await _searchRepo.searchArtistByQuery(ApiRequest(params: param));
-
+      final res = await _searchRepo.searchAlbumByQuery(ApiRequest(params: param));
       res.when(
         success: (data) {
           hasMoreData = data.results?.isNotEmpty ?? false;
-          emit(state.copyWith(apiState: ApiState.success, artists: [...state.artists, ...?data.results]));
+          emit(state.copyWith(apiState: ApiState.success, albums: [...state.albums, ...?data.results]));
         },
         error: (exception) {
-          exception.message.showErrorAlert();
-          'Search Artist By Query API failed : $exception'.logE;
+          'Search Album By Query API failed : $exception'.logE;
           emit(state.copyWith(apiState: ApiState.error));
+          exception.message.showErrorAlert();
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, artists: _appDb.artistSearchHistory));
+      emit(state.copyWith(apiState: ApiState.success, albums: _appDb.albumSearchHistory));
     }
   }
 }
