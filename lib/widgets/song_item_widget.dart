@@ -55,17 +55,18 @@ class SongItemWidget extends StatelessWidget {
                     Flexible(
                       child: Text(
                         title,
-                        maxLines: 1,
+                        maxLines: description.isNotEmpty ? 1 : 2,
                         overflow: TextOverflow.ellipsis,
                         style: context.textTheme.bodyMedium,
                       ),
                     ),
-                    Text(
-                      description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
-                    ),
+                    if (description.isNotEmpty)
+                      Text(
+                        description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                      ),
                   ],
                 ),
               ),

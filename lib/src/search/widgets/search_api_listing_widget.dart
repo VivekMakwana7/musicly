@@ -40,7 +40,10 @@ class SearchApiListingWidget extends StatelessWidget {
             selector: (state) => state.searchModel?.songs ?? [],
             builder: (context, songs) {
               if (songs.isNotEmpty) {
-                return SongSearchWidget(songs: songs, query: context.read<SearchCubit>().searchController.text.trim());
+                return SongSearchWidget.api(
+                  songs: songs,
+                  query: context.read<SearchCubit>().searchController.text.trim(),
+                );
               }
               return const SizedBox.shrink();
             },
@@ -52,7 +55,13 @@ class SearchApiListingWidget extends StatelessWidget {
               if (albums.isNotEmpty) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [AlbumSearchWidget(albums: albums), SizedBox(height: 20.h)],
+                  children: [
+                    AlbumSearchWidget.api(
+                      albums: albums,
+                      query: context.read<SearchCubit>().searchController.text.trim(),
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
                 );
               }
               return const SizedBox.shrink();
@@ -64,7 +73,13 @@ class SearchApiListingWidget extends StatelessWidget {
               if (artists.isNotEmpty) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [ArtistSearchWidget(artists: artists), SizedBox(height: 20.h)],
+                  children: [
+                    ArtistSearchWidget.api(
+                      artists: artists,
+                      query: context.read<SearchCubit>().searchController.text.trim(),
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
                 );
               }
               return const SizedBox.shrink();
@@ -76,7 +91,13 @@ class SearchApiListingWidget extends StatelessWidget {
               if (playlists.isNotEmpty) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [PlayListSearchWidget(playlists: playlists), SizedBox(height: 20.h)],
+                  children: [
+                    PlayListSearchWidget.api(
+                      playlists: playlists,
+                      query: context.read<SearchCubit>().searchController.text.trim(),
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
                 );
               }
               return const SizedBox.shrink();

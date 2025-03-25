@@ -5,7 +5,7 @@ import 'package:musicly/core/logger.dart';
 import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_page.dart';
 import 'package:musicly/src/liked/liked_page.dart';
-import 'package:musicly/src/search/pages/search_song_page.dart';
+import 'package:musicly/src/search/pages/song/search_song_page.dart';
 import 'package:musicly/src/search/search_page.dart';
 import 'package:musicly/widgets/bottom_nav/bottom_nav.dart';
 

@@ -7,10 +7,12 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
+  audioplayers: ^6.4.0
   bloc: ^9.0.0
   cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   envied: ^1.1.1
+  flash: ^3.1.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.0

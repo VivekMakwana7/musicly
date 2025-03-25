@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart' show HiveObject;
-import 'package:musicly/core/db/models/image_model.dart';
+import 'package:musicly/core/db/models/image/image_model.dart';
 
 part 'recent_played_song_model.freezed.dart';
 

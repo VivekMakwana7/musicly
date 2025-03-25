@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:hive_ce/hive.dart';
-import 'package:musicly/core/db/models/recent_played_song_model.dart';
-import 'package:musicly/core/db/models/search_history_model.dart';
+import 'package:musicly/core/db/models/album/db_album_model.dart';
+import 'package:musicly/core/db/models/artist/db_artist_model.dart';
+import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
+import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
-import 'package:musicly/core/enums/search_item_type.dart';
-import 'package:musicly/src/search/model/album/global_album_model.dart';
-import 'package:musicly/src/search/model/artist/global_artist_model.dart';
-import 'package:musicly/src/search/model/image/image_response_model.dart';
-import 'package:musicly/src/search/model/song/global_song_model.dart';
 
 /// to store local data
 class AppDB {
@@ -51,99 +48,91 @@ class AppDB {
     }
   }
 
-  // /// notifies user on value change
-  // Stream<BoxEvent> userListenable() {
-  //   return _box.watch(key: 'user').asBroadcastStream();
-  // }
-
   /// to logout user
   Future<void> logoutUser() async {
     await _box.clear();
   }
 
-  /// to get searched items
-  List<SearchHistoryModel> get searchHistory {
-    final searchHistoryList = getValue('searchHistory', defaultValue: <dynamic>[]);
-    return searchHistoryList.map((e) => e as SearchHistoryModel).toList();
+  /// Stream For Song Search History Update
+  Stream<BoxEvent> songSearchHistoryListenable() {
+    return _box.watch(key: 'songSearchHistory').asBroadcastStream();
   }
 
-  /// to store searched items
-  set searchHistory(List<SearchHistoryModel> searchHistory) => setValue('searchHistory', searchHistory);
-
-  /// Filter Search History and get Song Result List
-  List<GlobalSongModel> get songSearchHistory =>
-      searchHistory
-          .where((element) => element.type == SearchItemType.song)
-          .map(
-            (e) => GlobalSongModel(
-              id: e.id,
-              title: e.title,
-              description: e.descripiton,
-              url: e.url,
-              image: e.images?.map((ele) => ImageResponseModel(quality: ele.quality, url: ele.url)).toList(),
-            ),
-          )
-          .take(5)
-          .toList();
-
-  /// Filter Search History and get artist Result List
-  List<GlobalArtistModel> get artistSearchHistory =>
-      searchHistory
-          .where((element) => element.type == SearchItemType.artist)
-          .map(
-            (e) => GlobalArtistModel(
-              id: e.id,
-              title: e.title,
-              description: e.descripiton,
-              image: e.images?.map((ele) => ImageResponseModel(quality: ele.quality, url: ele.url)).toList(),
-            ),
-          )
-          .take(10)
-          .toList();
-
-  /// Filter Search History and get album result List
-  List<GlobalAlbumModel> get albumSearchHistory =>
-      searchHistory
-          .where((element) => element.type == SearchItemType.album)
-          .map(
-            (e) => GlobalAlbumModel(
-              id: e.id,
-              title: e.title,
-              description: e.descripiton,
-              image: e.images?.map((ele) => ImageResponseModel(quality: ele.quality, url: ele.url)).toList(),
-              url: e.url,
-            ),
-          )
-          .take(6)
-          .toList();
-
-  /// Filter Search History and get Play Result List
-  // List<PlayListResultModel> get playlistSearchHistory =>
-  //     searchHistory
-  //         .where((element) => element.type == SearchItemType.playlist)
-  //         .map(
-  //           (e) => PlayListResultModel(
-  //             id: e.id,
-  //             title: e.title,
-  //             description: e.descripiton,
-  //             image: e.images?.map((ele) => ResultImageModel(quality: ele.quality, url: ele.url)).toList(),
-  //             url: e.url,
-  //           ),
-  //         )
-  //         .take(10)
-  //         .toList();
-
-  /// to get Recent Played Song List
-  List<RecentPlayedSongModel> get recentPlayedSongList {
-    final searchHistoryList = getValue('recentPlayedSongList', defaultValue: <dynamic>[]);
-    return searchHistoryList.map((e) => e as RecentPlayedSongModel).toList();
+  /// For get Song Search History
+  List<DbSongModel> get songSearchHistory {
+    final historyList = getValue('songSearchHistory', defaultValue: <dynamic>[]);
+    return historyList.map((e) => e as DbSongModel).toList();
   }
 
-  /// to store recent Played Song items
-  set recentPlayedSongList(List<RecentPlayedSongModel> recentPlayed) => setValue('recentPlayedSongList', recentPlayed);
+  /// For set Song Search History
+  set songSearchHistory(List<DbSongModel> history) {
+    setValue('songSearchHistory', history);
+  }
 
-  /// Stream For Recent Played Song Update
+  /// Check History empty or not
+  bool get isHistoryEmpty =>
+      songSearchHistory.isEmpty &&
+      albumSearchHistory.isEmpty &&
+      artistSearchHistory.isEmpty &&
+      playlistSearchHistory.isEmpty;
+
+  /// For get Album Search History
+  List<DbAlbumModel> get albumSearchHistory {
+    final historyList = getValue('albumSearchHistory', defaultValue: <dynamic>[]);
+    return historyList.map((e) => e as DbAlbumModel).toList();
+  }
+
+  /// For set album Search History
+  set albumSearchHistory(List<DbAlbumModel> history) {
+    setValue('albumSearchHistory', history);
+  }
+
+  /// For get Artist Search History
+  List<DbArtistModel> get artistSearchHistory {
+    final historyList = getValue('artistSearchHistory', defaultValue: <dynamic>[]);
+    return historyList.map((e) => e as DbArtistModel).toList();
+  }
+
+  /// For set artist Search History
+  set artistSearchHistory(List<DbArtistModel> history) {
+    setValue('artistSearchHistory', history);
+  }
+
+  /// For get Playlist Search History
+  List<DbPlaylistModel> get playlistSearchHistory {
+    final historyList = getValue('playlistSearchHistory', defaultValue: <dynamic>[]);
+    return historyList.map((e) => e as DbPlaylistModel).toList();
+  }
+
+  /// For set Playlist Search History
+  set playlistSearchHistory(List<DbPlaylistModel> history) {
+    setValue('playlistSearchHistory', history);
+  }
+
+  /// For get Liked Songs
+  List<DbSongModel> get likedSongs {
+    final historyList = getValue('likedSongs', defaultValue: <dynamic>[]);
+    return historyList.map((e) => e as DbSongModel).toList();
+  }
+
+  /// For set Liked Songs
+  set likedSongs(List<DbSongModel> history) {
+    setValue('likedSongs', history);
+  }
+
+  /// For get Recent Played Songs
+  List<DbSongModel> get recentPlayedSong {
+    final historyList = getValue('recentPlayedSong', defaultValue: <dynamic>[]);
+    return historyList.map((e) => e as DbSongModel).toList();
+  }
+
+  /// For set Recent Played Songs
+  set recentPlayedSong(List<DbSongModel> history) {
+    setValue('recentPlayedSong', history);
+  }
+
+  /// Recent Played Song Stream
   Stream<BoxEvent> recentPlayedSongStream() {
-    return _box.watch(key: 'recentPlayedSongList').asBroadcastStream();
+    return _box.watch(key: 'recentPlayedSong').asBroadcastStream();
   }
 }

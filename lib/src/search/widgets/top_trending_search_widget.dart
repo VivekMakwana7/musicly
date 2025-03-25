@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:musicly/core/cubits/audio/audio_cubit.dart';
+import 'package:musicly/core/db/data_base_handler.dart';
+import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/src/search/cubit/search_cubit.dart';
@@ -40,6 +43,9 @@ class TopTrendingSearchWidget extends StatelessWidget {
                     child: ArtistItemWidget(
                       artistImageURL: topTrending.image?.last.url ?? '',
                       artistName: topTrending.title ?? '',
+                      onTap: () {
+                        DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name);
+                      },
                     ),
                   ),
                 ),
@@ -52,6 +58,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                       title: topTrending.title ?? '',
                       albumImageURL: topTrending.image?.last.url ?? '',
                       description: topTrending.description ?? '',
+                      onTap: () => DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name),
                     ),
                   ),
                 ),
@@ -59,7 +66,15 @@ class TopTrendingSearchWidget extends StatelessWidget {
                   description: topTrending.description ?? '',
                   songImageURL: topTrending.image?.last.url ?? '',
                   title: topTrending.title ?? '',
-                  onTap: () => context.read<SearchCubit>().onTopTrendyItemTap(index),
+                  onTap: () {
+                    Injector.instance<AudioCubit>().setNetworkSource(
+                      type: SourceType.searchSong,
+                      query: context.read<SearchCubit>().searchController.text.trim(),
+                      page: 1,
+                      songId: topTrending.id,
+                    );
+                    DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name);
+                  },
                 ),
               };
             },
