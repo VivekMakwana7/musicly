@@ -38,5 +38,29 @@ final appRouter = GoRouter(
         return MaterialPage(key: state.pageKey, child: SearchSongPage(query: query));
       },
     ),
+    GoRoute(
+      path: AppRoutes.searchAlbumPage.navPath,
+      name: AppRoutes.searchAlbumPage,
+      pageBuilder: (context, state) {
+        final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
+        return MaterialPage(key: state.pageKey, child: SearchAlbumPage(query: query));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.searchArtistPage.navPath,
+      name: AppRoutes.searchArtistPage,
+      pageBuilder: (context, state) {
+        final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
+        return MaterialPage(key: state.pageKey, child: SearchArtistPage(query: query));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.searchPlaylistPage.navPath,
+      name: AppRoutes.searchPlaylistPage,
+      pageBuilder: (context, state) {
+        final query = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['query'] as String?;
+        return MaterialPage(key: state.pageKey, child: SearchPlaylistPage(query: query));
+      },
+    ),
   ],
 );
