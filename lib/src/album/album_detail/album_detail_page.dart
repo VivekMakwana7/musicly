@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/core/theme/theme.dart';
 import 'package:musicly/gen/assets.gen.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/album/album_detail/cubit/album_detail_cubit.dart';
 import 'package:musicly/widgets/app_back_button.dart';
 import 'package:musicly/widgets/artist_item_widget.dart';
@@ -126,7 +128,7 @@ class AlbumDetailPage extends StatelessWidget {
                                                       Flexible(
                                                         child: Text(
                                                           albumSong.name ?? '',
-                                                          maxLines: 2,
+                                                          maxLines: 1,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: context.textTheme.bodyMedium,
                                                         ),
@@ -173,6 +175,9 @@ class AlbumDetailPage extends StatelessWidget {
                                 return ArtistItemWidget(
                                   artistImageURL: artist?.image?.last.url ?? '',
                                   artistName: artist?.name ?? '',
+                                  onTap: () {
+                                    context.pushNamed(AppRoutes.artistDetailPage, extra: {'artistId': artist!.id});
+                                  },
                                 );
                               },
                               itemCount: state.album?.artists?.primary?.length,

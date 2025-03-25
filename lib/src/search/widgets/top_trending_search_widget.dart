@@ -53,7 +53,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                 SearchItemType.album => Align(
                   alignment: Alignment.centerLeft,
                   child: SizedBox(
-                    height: 168.h,
+                    height: 174.h,
                     width: 98.w,
                     child: AlbumItemWidget(
                       title: topTrending.title ?? '',
