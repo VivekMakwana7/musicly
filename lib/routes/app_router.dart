@@ -4,6 +4,7 @@ import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/src/album/album_detail/album_detail_page.dart';
 import 'package:musicly/src/album/search_album_page.dart';
+import 'package:musicly/src/artist/artist_detail/artist_detail_page.dart';
 import 'package:musicly/src/artist/search_artist_page.dart';
 import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_page.dart';
@@ -72,6 +73,14 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) {
         final albumId = (state.extra! as Map<String, dynamic>)['albumId'] as String;
         return MaterialPage(key: state.pageKey, child: AlbumDetailPage(albumId: albumId));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.artistDetailPage.navPath,
+      name: AppRoutes.artistDetailPage,
+      pageBuilder: (context, state) {
+        final artistId = (state.extra! as Map<String, dynamic>)['artistId'] as String;
+        return MaterialPage(key: state.pageKey, child: ArtistDetailPage(artistId: artistId));
       },
     ),
   ],

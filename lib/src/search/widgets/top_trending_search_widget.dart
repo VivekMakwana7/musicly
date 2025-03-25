@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/search/cubit/search_cubit.dart';
 import 'package:musicly/src/search/model/top_trending/global_top_trending_model.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
@@ -44,7 +45,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                       artistImageURL: topTrending.image?.last.url ?? '',
                       artistName: topTrending.title ?? '',
                       onTap: () {
-                        DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name);
+                        context.pushNamed(AppRoutes.artistDetailPage, extra: {'artistId': topTrending.id});
                       },
                     ),
                   ),
@@ -58,7 +59,9 @@ class TopTrendingSearchWidget extends StatelessWidget {
                       title: topTrending.title ?? '',
                       albumImageURL: topTrending.image?.last.url ?? '',
                       description: topTrending.description ?? '',
-                      onTap: () => DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name),
+                      onTap: () {
+                        context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': topTrending.id});
+                      },
                     ),
                   ),
                 ),
@@ -73,7 +76,6 @@ class TopTrendingSearchWidget extends StatelessWidget {
                       page: 1,
                       songId: topTrending.id,
                     );
-                    DatabaseHandler.appendToDb(id: topTrending.id, type: topTrending.type.name);
                   },
                 ),
               };

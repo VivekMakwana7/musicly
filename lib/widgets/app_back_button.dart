@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 /// Common Back button for detail page
-class BackButton extends StatelessWidget {
+class AppBackButton extends StatelessWidget {
   /// Default constructor
-  const BackButton({super.key});
+  const AppBackButton({super.key});
 
   @override
   Widget build(BuildContext context) {
