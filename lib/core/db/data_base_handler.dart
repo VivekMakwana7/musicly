@@ -135,4 +135,14 @@ class DatabaseHandler {
     appDb.playlistSearchHistory = [playlist, ...appDb.playlistSearchHistory];
     'Playlist added to database : ${playlist.id}'.logD;
   }
+
+  /// Handle Toggle liked Song
+  static void toggleLikedSong(DbSongModel song) {
+    final appDb = Injector.instance<AppDB>();
+    if (appDb.likedSongs.any((s) => s.id == song.id)) {
+      appDb.likedSongs.remove(song);
+    } else {
+      appDb.likedSongs.add(song);
+    }
+  }
 }

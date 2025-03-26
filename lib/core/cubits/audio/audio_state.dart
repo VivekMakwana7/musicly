@@ -10,6 +10,8 @@ final class AudioState {
     this.songSources = const [],
     this.positioned = Duration.zero,
     this.duration = Duration.zero,
+    this.isRepeat = false,
+    this.isShuffle = false,
   });
 
   /// [AudioPlayState] of the audio
@@ -30,6 +32,12 @@ final class AudioState {
   /// Current Playing song duration
   final Duration duration;
 
+  /// For is source is shuffled or not
+  final bool isShuffle;
+
+  /// For is source is repeat or not
+  final bool isRepeat;
+
   /// Copy with
   AudioState copyWith({
     AudioPlayState? playState,
@@ -37,6 +45,8 @@ final class AudioState {
     List<DbSongModel>? songSources,
     Duration? positioned,
     Duration? duration,
+    bool? isShuffle,
+    bool? isRepeat,
   }) {
     return AudioState(
       playState: playState ?? this.playState,
@@ -44,6 +54,8 @@ final class AudioState {
       songSources: songSources ?? this.songSources,
       positioned: positioned ?? this.positioned,
       duration: duration ?? this.duration,
+      isShuffle: isShuffle ?? this.isShuffle,
+      isRepeat: isRepeat ?? this.isRepeat,
     );
   }
 }

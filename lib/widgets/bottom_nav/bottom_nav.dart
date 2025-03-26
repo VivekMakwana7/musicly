@@ -28,7 +28,7 @@ class BottomNav extends StatelessWidget {
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF353A40), Color(0xFF32373D), Color(0xFF23282C)],
+                  colors: [Color(0xFF2C3036), Color(0xFF31343C)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),

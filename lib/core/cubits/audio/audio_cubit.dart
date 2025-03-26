@@ -64,6 +64,7 @@ class AudioCubit extends Cubit<AudioState> {
       error: (exception) {
         'Search song by Query API failed : $exception'.logE;
         exception.message.showErrorAlert();
+        emit(state.copyWith(playState: AudioPlayState.error));
       },
     );
   }
@@ -221,6 +222,23 @@ class AudioCubit extends Cubit<AudioState> {
     if (index > 0) {
       _playSongAtIndex(index - 1);
     }
+  }
+
+  /// Toggle Like Song
+  void toggleLikeSong() {
+    final song = state.song?.copyWith(isLiked: !(state.song?.isLiked ?? false));
+    emit(state.copyWith(song: song));
+    DatabaseHandler.toggleLikedSong(song!);
+  }
+
+  /// Toggle Repeat Song
+  void toggleRepeatSong() {
+    emit(state.copyWith(isRepeat: !state.isRepeat));
+  }
+
+  /// Toggle Shuffle Song
+  void toggleShuffleSong() {
+    emit(state.copyWith(isShuffle: !state.isShuffle));
   }
 }
 
