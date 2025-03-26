@@ -5,6 +5,7 @@ import 'package:musicly/core/db/models/album/db_album_model.dart';
 import 'package:musicly/core/db/models/artist/db_artist_model.dart';
 import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
+import 'package:musicly/core/db/models/song_playlist/db_song_playlist_model.dart';
 import 'package:musicly/core/di/injector.dart';
 
 /// to store local data
@@ -139,5 +140,21 @@ class AppDB {
   /// Stream for Liked Song Stream
   Stream<BoxEvent> likedSongStream() {
     return _box.watch(key: 'likedSongs').asBroadcastStream();
+  }
+
+  /// For get Song Playlist
+  List<DbSongPlaylistModel> get songPlaylist {
+    final list = getValue('songPlaylist', defaultValue: <dynamic>[]);
+    return list.map((e) => e as DbSongPlaylistModel).toList();
+  }
+
+  /// For set Song Playlist
+  set songPlaylist(List<DbSongPlaylistModel> list) {
+    setValue('songPlaylist', list);
+  }
+
+  /// Stream for Song Playlist Stream
+  Stream<BoxEvent> songPlaylistStream() {
+    return _box.watch(key: 'songPlaylist').asBroadcastStream();
   }
 }

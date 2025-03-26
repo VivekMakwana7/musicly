@@ -7,6 +7,7 @@ import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
 import 'package:musicly/core/db/models/recent_played_song_model.dart';
 import 'package:musicly/core/db/models/search_history_model.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
+import 'package:musicly/core/db/models/song_playlist/db_song_playlist_model.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 
 part 'hive_adapter.g.dart';
@@ -28,6 +29,7 @@ part 'hive_adapter.g.dart';
   AdapterSpec<DbArtistModel>(), // Artist Model
   AdapterSpec<Bio>(), // Artist Bio Model
   AdapterSpec<DbPlaylistModel>(), // Playlist Model
+  AdapterSpec<DbSongPlaylistModel>(), // Song Playlist Model
 ])
 // This is for code generation
 // ignore: unused_element
