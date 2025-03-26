@@ -123,7 +123,7 @@ class AppDB {
   /// For get Recent Played Songs
   List<DbSongModel> get recentPlayedSong {
     final historyList = getValue('recentPlayedSong', defaultValue: <dynamic>[]);
-    return historyList.map((e) => e as DbSongModel).toList();
+    return historyList.map((e) => e as DbSongModel).toSet().toList();
   }
 
   /// For set Recent Played Songs
@@ -131,8 +131,13 @@ class AppDB {
     setValue('recentPlayedSong', history);
   }
 
-  /// Recent Played Song Stream
+  /// Stream for Recent Played Song Stream
   Stream<BoxEvent> recentPlayedSongStream() {
     return _box.watch(key: 'recentPlayedSong').asBroadcastStream();
+  }
+
+  /// Stream for Liked Song Stream
+  Stream<BoxEvent> likedSongStream() {
+    return _box.watch(key: 'likedSongs').asBroadcastStream();
   }
 }

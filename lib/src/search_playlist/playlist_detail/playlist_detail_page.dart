@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/gen/assets.gen.dart';
-import 'package:musicly/src/playlist/playlist_detail/cubit/playlist_detail_cubit.dart';
+import 'package:musicly/src/search_playlist/playlist_detail/cubit/playlist_detail_cubit.dart';
 import 'package:musicly/widgets/app_back_button.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 import 'package:musicly/widgets/detail_artist_listing_widget.dart';

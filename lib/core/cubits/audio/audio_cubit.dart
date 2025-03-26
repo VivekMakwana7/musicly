@@ -38,11 +38,11 @@ class AudioCubit extends Cubit<AudioState> {
 
   void _addToRecentPlayed(DbSongModel song) {
     final recentPlayedSongs = Injector.instance<AppDB>().recentPlayedSong;
-    if (recentPlayedSongs.contains(song)) {
+    if (recentPlayedSongs.any((element) => element.id == song.id)) {
       recentPlayedSongs.remove(song);
     }
     recentPlayedSongs.insert(0, song);
-    Injector.instance<AppDB>().recentPlayedSong = recentPlayedSongs;
+    Injector.instance<AppDB>().recentPlayedSong = recentPlayedSongs.toSet().toList();
   }
 
   Future<void> _searchSongs({required String query, required int page, String? songId}) async {
@@ -98,7 +98,7 @@ class AudioCubit extends Cubit<AudioState> {
     final playState = switch (playerState) {
       PlayerState.playing => AudioPlayState.play,
       PlayerState.paused => AudioPlayState.pause,
-      PlayerState.stopped => AudioPlayState.error,
+      PlayerState.stopped => AudioPlayState.idle,
       PlayerState.completed => _handlePlaybackComplete(),
       PlayerState.disposed => AudioPlayState.idle,
     };
@@ -127,6 +127,7 @@ class AudioCubit extends Cubit<AudioState> {
       _playSongAtIndex(nextIndex);
     } else {
       'User played all song'.logD;
+      _audioPlayer.stop();
       emit(state.copyWith(playState: AudioPlayState.idle));
     }
   }
@@ -149,6 +150,7 @@ class AudioCubit extends Cubit<AudioState> {
       _playSongAtIndex(nextIndex);
     } else {
       'User played all song'.logD;
+      _audioPlayer.stop();
       emit(state.copyWith(playState: AudioPlayState.idle));
     }
   }
@@ -255,10 +257,12 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   /// Toggle Like Song
-  void toggleLikeSong() {
-    final song = state.song?.copyWith(isLiked: !(state.song?.isLiked ?? false));
-    emit(state.copyWith(song: song));
-    DatabaseHandler.toggleLikedSong(song!);
+  void toggleLikeSong({bool? isLiked}) {
+    final song = state.song?.copyWith(isLiked: isLiked ?? !(state.song?.isLiked ?? false));
+    final sourceList = state.songSources.toList();
+    sourceList[sourceList.indexOf(state.song!)] = song!;
+    emit(state.copyWith(song: song, songSources: sourceList));
+    if (isLiked == null) DatabaseHandler.toggleLikedSong(song);
   }
 
   /// Toggle Repeat Song
@@ -279,6 +283,12 @@ class AudioCubit extends Cubit<AudioState> {
       final list = state.originSongSources.toList();
       emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
     }
+  }
+
+  /// For check Like
+  void checkLike() {
+    final isLiked = DatabaseHandler.isSongLiked(state.song!);
+    toggleLikeSong(isLiked: isLiked);
   }
 }
 

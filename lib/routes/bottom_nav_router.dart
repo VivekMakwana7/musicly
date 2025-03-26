@@ -29,7 +29,8 @@ final _bottomNavBranches = <StatefulShellBranch>[
         path: AppRoutes.libraryPage.navPath,
         name: AppRoutes.libraryPage,
         pageBuilder: (context, state) {
-          return MaterialPage(key: state.pageKey, child: const LibraryPage());
+          final song = state.extra == null ? null : (state.extra! as Map<String, dynamic>)['song'] as DbSongModel?;
+          return MaterialPage(key: state.pageKey, child: LibraryPage(song: song));
         },
       ),
     ],

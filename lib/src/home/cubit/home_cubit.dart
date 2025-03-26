@@ -9,10 +9,8 @@ part 'home_state.dart';
 /// Home page's cubit
 class HomeCubit extends Cubit<HomeState> {
   /// Default constructor
-  HomeCubit() : super(HomeState()) {
-    recentPlayedStream = Injector.instance<AppDB>().songSearchHistoryListenable();
-  }
+  HomeCubit() : super(HomeState());
 
-  /// Stream for recent Played Song Update
-  late final Stream<BoxEvent> recentPlayedStream;
+  /// Stream for liked song update
+  late final Stream<BoxEvent> likedSongStream = Injector.instance<AppDB>().likedSongStream();
 }

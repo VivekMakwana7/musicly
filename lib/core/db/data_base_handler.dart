@@ -137,12 +137,22 @@ class DatabaseHandler {
   }
 
   /// Handle Toggle liked Song
-  static void toggleLikedSong(DbSongModel song) {
-    final appDb = Injector.instance<AppDB>();
-    if (appDb.likedSongs.any((s) => s.id == song.id)) {
-      appDb.likedSongs.remove(song);
+  static void toggleLikedSong(DbSongModel song, {bool showToast = false}) {
+    final list = Injector.instance<AppDB>().likedSongs.toList();
+    if (list.any((s) => s.id == song.id)) {
+      list.removeWhere((element) => element.id == song.id);
+      if (showToast) 'Song removed from liked songs'.showSuccessAlert();
     } else {
-      appDb.likedSongs.add(song);
+      list.insert(0, song);
+      if (showToast) 'Song added to liked songs'.showSuccessAlert();
     }
+
+    Injector.instance<AppDB>().likedSongs = list;
+  }
+
+  /// Check is song liked from local database
+  static bool isSongLiked(DbSongModel song) {
+    final list = Injector.instance<AppDB>().likedSongs;
+    return list.any((s) => s.id == song.id);
   }
 }

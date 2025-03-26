@@ -6,8 +6,8 @@ import 'package:musicly/core/rest_utils/api_request.dart';
 import 'package:musicly/core/rest_utils/endpoints.dart';
 import 'package:musicly/src/album/models/search_album_response_model.dart';
 import 'package:musicly/src/artist/models/search_artist_response_model.dart';
-import 'package:musicly/src/playlist/models/search_playlist_response_model.dart';
 import 'package:musicly/src/search/model/global_search_model.dart';
+import 'package:musicly/src/search_playlist/models/search_playlist_response_model.dart';
 import 'package:musicly/src/song/models/search_song_response_model.dart';
 import 'package:pkg_dio/pkg_dio.dart';
 

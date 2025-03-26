@@ -8,7 +8,7 @@ import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
 import 'package:musicly/repos/search_repository.dart';
-import 'package:musicly/src/playlist/playlist_detail/playlist_detail_page.dart';
+import 'package:musicly/src/search_playlist/playlist_detail/playlist_detail_page.dart';
 
 part 'playlist_detail_state.dart';
 

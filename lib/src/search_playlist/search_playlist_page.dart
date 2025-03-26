@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/routes/app_router.dart';
-import 'package:musicly/src/playlist/cubit/search_playlist_cubit.dart';
+import 'package:musicly/src/search_playlist/cubit/search_playlist_cubit.dart';
 import 'package:musicly/src/song/widgets/search_song_loading_widget.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 import 'package:musicly/widgets/song_item_widget.dart';

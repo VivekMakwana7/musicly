@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/src/album/album_detail/album_detail_page.dart';
@@ -10,9 +11,9 @@ import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_page.dart';
 import 'package:musicly/src/liked/liked_page.dart';
 import 'package:musicly/src/music/music_page.dart';
-import 'package:musicly/src/playlist/playlist_detail/playlist_detail_page.dart';
-import 'package:musicly/src/playlist/search_playlist_page.dart';
 import 'package:musicly/src/search/search_page.dart';
+import 'package:musicly/src/search_playlist/playlist_detail/playlist_detail_page.dart';
+import 'package:musicly/src/search_playlist/search_playlist_page.dart';
 import 'package:musicly/src/song/search_song_page.dart';
 import 'package:musicly/widgets/bottom_nav/bottom_nav.dart';
 
