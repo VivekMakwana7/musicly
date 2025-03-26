@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
@@ -29,7 +30,8 @@ class PlaylistDetailCubit extends Cubit<PlaylistDetailState> {
 
     res.when(
       success: (data) {
-        // emit(state.copyWith(apiState: ApiState.success, playlist: data));
+        emit(state.copyWith(apiState: ApiState.success, playlist: data));
+        DatabaseHandler.addToPlaylistSearchHistory(data);
       },
       error: (exception) {
         exception.message.showErrorAlert();

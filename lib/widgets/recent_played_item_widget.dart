@@ -41,7 +41,7 @@ class RecentPlayedItemWidget extends StatelessWidget {
                 ),
                 Text(
                   title,
-                  style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF989CA0)),
+                  style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF989CA0), height: 1.3),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/album/db_album_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
@@ -29,6 +30,7 @@ class AlbumDetailCubit extends Cubit<AlbumDetailState> {
     res.when(
       success: (data) {
         emit(state.copyWith(apiState: ApiState.success, album: data));
+        DatabaseHandler.addToAlbumSearchHistory(data);
       },
       error: (exception) {
         'Album by Id API failed : $exception'.logE;

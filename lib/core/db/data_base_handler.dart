@@ -34,7 +34,7 @@ class DatabaseHandler {
       success: (data) {
         if (data.isNotEmpty) {
           'Song added to database : ${data.first.id}'.logD;
-          _addToSongSearchHistory(data.first);
+          addToSongSearchHistory(data.first);
         } else {
           'No data found '.logD;
         }
@@ -47,7 +47,7 @@ class DatabaseHandler {
   }
 
   /// Adds a song to the song search history in the database.
-  static void _addToSongSearchHistory(DbSongModel song) {
+  static void addToSongSearchHistory(DbSongModel song) {
     final appDb = Injector.instance<AppDB>();
     // Check if the song already exists in history
     if (appDb.songSearchHistory.any((s) => s.id == song.id)) {
@@ -64,7 +64,7 @@ class DatabaseHandler {
     final res = await searchRepo.searchAlbumById(ApiRequest(params: {'id': albumId}));
 
     res.when(
-      success: _addToAlbumSearchHistory,
+      success: addToAlbumSearchHistory,
       error: (exception) {
         'Search album by Id API failed : $exception'.logE;
         'Failed to add album to local database'.showErrorAlert();
@@ -73,7 +73,7 @@ class DatabaseHandler {
   }
 
   /// Adds a album to the album search history in the database.
-  static void _addToAlbumSearchHistory(DbAlbumModel album) {
+  static void addToAlbumSearchHistory(DbAlbumModel album) {
     final appDb = Injector.instance<AppDB>();
     // Check if the album already exists in history
     if (appDb.albumSearchHistory.any((s) => s.id == album.id)) {
@@ -90,7 +90,7 @@ class DatabaseHandler {
     final res = await searchRepo.searchArtistById(ApiRequest(pathParameter: artistId));
 
     res.when(
-      success: _addToArtistSearchHistory,
+      success: addToArtistSearchHistory,
       error: (exception) {
         'Search Artist by Id API failed : $exception'.logE;
         'Failed to add artist to local database'.showErrorAlert();
@@ -99,7 +99,7 @@ class DatabaseHandler {
   }
 
   /// Adds a artist to the artist search history in the database.
-  static void _addToArtistSearchHistory(DbArtistModel artist) {
+  static void addToArtistSearchHistory(DbArtistModel artist) {
     final appDb = Injector.instance<AppDB>();
     // Check if the artist already exists in history
     if (appDb.artistSearchHistory.any((s) => s.id == artist.id)) {
@@ -116,7 +116,7 @@ class DatabaseHandler {
     final res = await searchRepo.searchPlaylistById(ApiRequest(params: {'id': playlistId}));
 
     res.when(
-      success: _addToPlaylistSearchHistory,
+      success: addToPlaylistSearchHistory,
       error: (exception) {
         'Search playlist by Id API failed : $exception'.logE;
         'Failed to add playlist to local database'.showErrorAlert();
@@ -125,7 +125,7 @@ class DatabaseHandler {
   }
 
   /// Adds a playlist to the playlist search history in the database.
-  static void _addToPlaylistSearchHistory(DbPlaylistModel playlist) {
+  static void addToPlaylistSearchHistory(DbPlaylistModel playlist) {
     final appDb = Injector.instance<AppDB>();
     // Check if the playlist already exists in history
     if (appDb.playlistSearchHistory.any((s) => s.id == playlist.id)) {

@@ -35,7 +35,7 @@ class RecentPlayedSongWidget extends StatelessWidget {
               child: Text('Recently played', style: context.textTheme.titleMedium),
             ),
             SizedBox(
-              height: 162.h,
+              height: 164.h,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
