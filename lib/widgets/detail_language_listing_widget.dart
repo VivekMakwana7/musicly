@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// for display Language listing
@@ -16,6 +17,7 @@ class DetailLanguageListingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLoading = languages.isEmpty;
+    final list = languages.toList()..removeWhere((element) => element == 'unknown');
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -27,7 +29,7 @@ class DetailLanguageListingWidget extends StatelessWidget {
           runSpacing: 6.h,
           spacing: 8.w,
           children: List.generate(
-            isLoading ? 6 : languages.length,
+            isLoading ? 6 : list.length,
             (index) => Skeletonizer(
               enabled: isLoading,
               child: DecoratedBox(
@@ -38,7 +40,7 @@ class DetailLanguageListingWidget extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-                  child: Text(isLoading ? 'Language $index' : languages[index] ?? ''),
+                  child: Text(isLoading ? 'Language $index' : list[index]?.toCapitalised ?? ''),
                 ),
               ),
             ),
