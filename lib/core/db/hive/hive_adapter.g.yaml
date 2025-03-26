@@ -273,7 +273,7 @@ types:
         index: 12
   DbSongPlaylistModel:
     typeId: 14
-    nextIndex: 3
+    nextIndex: 4
     fields:
       name:
         index: 0
@@ -281,3 +281,5 @@ types:
         index: 1
       id:
         index: 2
+      image:
+        index: 3

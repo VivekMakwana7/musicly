@@ -140,10 +140,10 @@ class MusicSheetWidget extends StatelessWidget {
 /// Music sheet menu
 class MusicSheetMenu extends StatelessWidget {
   /// Default constructor
-  const MusicSheetMenu({required this.title, required this.icon, super.key, this.onTap});
+  const MusicSheetMenu({required this.title, this.icon, super.key, this.onTap});
 
   /// For display icon
-  final Widget icon;
+  final Widget? icon;
 
   /// For display title
   final String title;
@@ -159,7 +159,7 @@ class MusicSheetMenu extends StatelessWidget {
       child: Row(
         spacing: 12.w,
         children: [
-          MusicIcon.medium(icon: icon),
+          if(icon != null) MusicIcon.medium(icon: icon!),
           Expanded(
             child: DecoratedBox(
               decoration: BoxDecoration(

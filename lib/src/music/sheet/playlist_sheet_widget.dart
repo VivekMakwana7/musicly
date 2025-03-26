@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/db/app_db.dart';
@@ -6,7 +8,6 @@ import 'package:musicly/core/db/models/song_playlist/db_song_playlist_model.dart
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
-import 'package:musicly/core/logger.dart';
 import 'package:musicly/src/music/sheet/music_sheet_widget.dart';
 import 'package:musicly/widgets/app_button.dart';
 import 'package:musicly/widgets/app_text_field.dart';
@@ -22,7 +23,6 @@ class PlaylistSheetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    'Injector.instance<AppDB>().songPlaylist : ${Injector.instance<AppDB>().songPlaylist.length}'.logD;
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       child: DecoratedBox(
@@ -72,25 +72,24 @@ class PlaylistSheetWidget extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 30.h),
-              MusicSheetMenu(
-                title: 'Add new Playlist',
-                icon: const Icon(Icons.add),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  AddPlaylistSheetWidget.show(context, song: song);
-                },
-              ),
-              SizedBox(height: 30.h),
               for (final e in Injector.instance<AppDB>().songPlaylist) ...[
                 MusicSheetMenu(
                   title: e.name,
-                  icon: const Icon(Icons.add),
                   onTap: () {
+                    final model = e.copyWith(songs: [...e.songs, song]);
+                    final list = Injector.instance<AppDB>().songPlaylist.toList();
+                    list[list.indexWhere((element) => element.id == e.id)] = model;
+                    Injector.instance<AppDB>().songPlaylist = list;
                     Navigator.of(context).pop();
                   },
                 ),
                 SizedBox(height: 12.h),
               ],
+              SizedBox(height: 30.h),
+              AppButton(name: 'Add Playlist',onTap: () {
+                Navigator.of(context).pop();
+                AddPlaylistSheetWidget.show(context, song: song);
+              },),
             ],
           ),
         ),
@@ -206,6 +205,7 @@ class _AddPlaylistSheetWidgetState extends State<AddPlaylistSheetWidget> {
                         final model = DbSongPlaylistModel(
                           name: _playlistController.text.trim(),
                           id: '${_playlistController.text.trim()[0]}${widget.song.id}',
+                          image: widget.song.image?.last.url ?? '',
                           songs: [
                             ...[widget.song],
                           ],
