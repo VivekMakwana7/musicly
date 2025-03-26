@@ -42,7 +42,12 @@ class DetailArtistListingWidget extends StatelessWidget {
             crossAxisSpacing: 12.w,
           ),
           itemBuilder: (context, index) {
-            final image = isLoading ? imageUrl : artists[index].image?.last.url ?? '';
+            final image =
+                isLoading
+                    ? imageUrl
+                    : artists[index].image != null && artists[index].image!.isNotEmpty
+                    ? artists[index].image?.last.url ?? ''
+                    : '';
             final name = isLoading ? 'Artist name' : artists[index].name ?? '';
 
             return Skeletonizer(

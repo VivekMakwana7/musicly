@@ -29,7 +29,7 @@ class PlaylistDetailCubit extends Cubit<PlaylistDetailState> {
 
     res.when(
       success: (data) {
-        emit(state.copyWith(apiState: ApiState.success, playlist: data));
+        // emit(state.copyWith(apiState: ApiState.success, playlist: data));
       },
       error: (exception) {
         exception.message.showErrorAlert();
