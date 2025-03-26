@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/src/music/sheet/music_sheet_widget.dart';
@@ -27,81 +26,74 @@ class MusicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<AudioCubit>().checkLike();
-    return BlocListener<AppCubit, AppState>(
-      listener: (context, state) {
-        if (state is SongLikeUpdate) {
-          context.read<AudioCubit>().toggleLikeSong(isLiked: state.isLiked);
-        }
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const AppBackButton(),
-                    AppMoreButton(
-                      onTap: () {
-                        MusicSheetWidget.show(context, song: context.read<AudioCubit>().state.song!);
-                      },
-                    ),
-                  ],
-                ),
-                Flexible(
-                  child: BlocBuilder<AudioCubit, AudioState>(
-                    buildWhen: (previous, current) => current.song != previous.song,
-                    builder: (context, state) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 80.h),
-                          DetailImageView(imageUrl: state.song?.image?.last.url ?? '', dimension: context.height * 0.3),
-                          const Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 8.h,
-                                  children: [
-                                    DetailTitleWidget(title: state.song?.name ?? '', maxLines: 2),
-                                    DetailDescriptionWidget(description: state.song?.label ?? ''),
-                                  ],
-                                ),
-                              ),
-                              const MusicLikeIcon(),
-                            ],
-                          ),
-                          SizedBox(height: 20.h),
-                          const MusicSeekBarWidget(),
-                          SizedBox(height: 8.h),
-                          const MusicTimeIndicatorWidget(),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                MusicShuffleIcon(),
-                                MusicPrevIcon(),
-                                MusicPlayPauseIcon(),
-                                MusicNextIcon(),
-                                MusicRepeatIcon(),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 40.h),
-                        ],
-                      );
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const AppBackButton(),
+                  AppMoreButton(
+                    onTap: () {
+                      MusicSheetWidget.show(context, song: context.read<AudioCubit>().state.song!);
                     },
                   ),
+                ],
+              ),
+              Flexible(
+                child: BlocBuilder<AudioCubit, AudioState>(
+                  buildWhen: (previous, current) => current.song != previous.song,
+                  builder: (context, state) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: 80.h),
+                        DetailImageView(imageUrl: state.song?.image?.last.url ?? '', dimension: context.height * 0.3),
+                        const Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 8.h,
+                                children: [
+                                  DetailTitleWidget(title: state.song?.name ?? '', maxLines: 2),
+                                  DetailDescriptionWidget(description: state.song?.label ?? ''),
+                                ],
+                              ),
+                            ),
+                            const MusicLikeIcon(),
+                          ],
+                        ),
+                        SizedBox(height: 20.h),
+                        const MusicSeekBarWidget(),
+                        SizedBox(height: 8.h),
+                        const MusicTimeIndicatorWidget(),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              MusicShuffleIcon(),
+                              MusicPrevIcon(),
+                              MusicPlayPauseIcon(),
+                              MusicNextIcon(),
+                              MusicRepeatIcon(),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 40.h),
+                      ],
+                    );
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

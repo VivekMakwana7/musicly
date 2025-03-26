@@ -7,14 +7,11 @@ sealed class AppState {}
 ///
 final class AppInitial extends AppState {}
 
-/// State for Song Like Update
-final class SongLikeUpdate extends AppState {
+/// State for Artist song Play
+final class ArtistSongPlay extends AppState{
   /// Constructor
-  SongLikeUpdate({required this.songId, required this.isLiked});
+  ArtistSongPlay({required this.artistId});
 
-  /// Song Id
-  final String songId;
-
-  /// Is Liked
-  final bool isLiked;
+  /// For navigate to particular Artist Id
+  final String artistId;
 }

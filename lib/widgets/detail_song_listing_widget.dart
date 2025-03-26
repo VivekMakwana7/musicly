@@ -12,13 +12,16 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// For display Detail page's song listing
 class DetailSongListingWidget extends StatelessWidget {
   /// Detail Song Listing Widget constructor
-  const DetailSongListingWidget({required this.songs, super.key});
+  const DetailSongListingWidget({required this.songs, super.key,this.onTap});
 
   /// For display Skeletonized widget
   factory DetailSongListingWidget.loading() => const DetailSongListingWidget(songs: []);
 
   /// List of Songs
   final List<DbSongModel> songs;
+
+  /// For handle extra activity on Item Tap
+  final void Function(int index)? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +57,7 @@ class DetailSongListingWidget extends StatelessWidget {
                   onTap: () {
                     if (!isLoading) {
                       Injector.instance<AudioCubit>().setLocalSource(song: songs[index], source: songs);
+                      onTap?.call(index);
                     }
                   },
                   behavior: HitTestBehavior.opaque,
