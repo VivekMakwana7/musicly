@@ -12,6 +12,7 @@ final class AudioState {
     this.duration = Duration.zero,
     this.isRepeat = false,
     this.isShuffle = false,
+    this.originSongSources = const [],
   });
 
   /// [AudioPlayState] of the audio
@@ -38,6 +39,9 @@ final class AudioState {
   /// For is source is repeat or not
   final bool isRepeat;
 
+  /// List of Songs
+  final List<DbSongModel> originSongSources;
+
   /// Copy with
   AudioState copyWith({
     AudioPlayState? playState,
@@ -47,6 +51,7 @@ final class AudioState {
     Duration? duration,
     bool? isShuffle,
     bool? isRepeat,
+    List<DbSongModel>? originSongSources,
   }) {
     return AudioState(
       playState: playState ?? this.playState,
@@ -56,6 +61,7 @@ final class AudioState {
       duration: duration ?? this.duration,
       isShuffle: isShuffle ?? this.isShuffle,
       isRepeat: isRepeat ?? this.isRepeat,
+      originSongSources: originSongSources ?? this.originSongSources,
     );
   }
 }

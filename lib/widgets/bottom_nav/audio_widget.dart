@@ -123,7 +123,8 @@ class AudioWidget extends StatelessWidget {
                               },
                             ),
                             BlocSelector<AudioCubit, AudioState, bool>(
-                              selector: (state) => state.currentIndex == state.songSources.length - 1,
+                              selector:
+                                  (state) => state.currentIndex == state.songSources.length - 1 && !state.isRepeat,
                               builder: (context, isDisabled) {
                                 return IconButton(
                                   onPressed: isDisabled ? () {} : cubit.playNextSong,

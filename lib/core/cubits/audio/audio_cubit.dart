@@ -52,7 +52,12 @@ class AudioCubit extends Cubit<AudioState> {
     res.when(
       success: (data) {
         hasMoreSearchResults = data.results?.isNotEmpty ?? false;
-        emit(state.copyWith(songSources: [...state.songSources, ...?data.results]));
+        emit(
+          state.copyWith(
+            songSources: [...state.songSources, ...?data.results],
+            originSongSources: [...state.originSongSources, ...?data.results],
+          ),
+        );
         if (songId != null) {
           final song = data.results?.firstWhere((element) => element.id == songId);
           if (song != null) {
@@ -71,7 +76,14 @@ class AudioCubit extends Cubit<AudioState> {
 
   void _setSource({required DbSongModel song, required List<DbSongModel> songSource}) {
     'Network source ${songSource.map((e) => e.id).toList()}'.logD;
-    emit(state.copyWith(song: song, songSources: songSource, playState: AudioPlayState.loading));
+    emit(
+      state.copyWith(
+        song: song,
+        songSources: songSource,
+        originSongSources: songSource,
+        playState: AudioPlayState.loading,
+      ),
+    );
     _playSong();
     _addToRecentPlayed(song);
   }
@@ -106,8 +118,17 @@ class AudioCubit extends Cubit<AudioState> {
 
   void _playLocalNext() {
     final currentIndex = state.songSources.indexOf(state.song!);
-    final nextIndex = currentIndex < state.songSources.length - 1 ? currentIndex + 1 : 0;
-    _playSongAtIndex(nextIndex);
+    if (currentIndex == state.songSources.length - 1 && state.isRepeat) {
+      _playSongAtIndex(0);
+      return;
+    }
+    if (currentIndex < state.songSources.length - 1) {
+      final nextIndex = currentIndex + 1;
+      _playSongAtIndex(nextIndex);
+    } else {
+      'User played all song'.logD;
+      emit(state.copyWith(playState: AudioPlayState.idle));
+    }
   }
 
   void _playNetworkNext() {
@@ -119,8 +140,16 @@ class AudioCubit extends Cubit<AudioState> {
       setNetworkSource(type: _type!, query: _query!, page: nextPage);
     }
 
+    if (currentIndex == state.songSources.length - 1 && state.isRepeat) {
+      _playSongAtIndex(0);
+      return;
+    }
     if (currentIndex < state.songSources.length - 1) {
-      _playSongAtIndex(currentIndex + 1);
+      final nextIndex = currentIndex + 1;
+      _playSongAtIndex(nextIndex);
+    } else {
+      'User played all song'.logD;
+      emit(state.copyWith(playState: AudioPlayState.idle));
     }
   }
 
@@ -136,7 +165,7 @@ class AudioCubit extends Cubit<AudioState> {
       _query = null;
       _type = null;
     }
-    emit(state.copyWith(song: song, songSources: source, playState: AudioPlayState.loading));
+    emit(state.copyWith(song: song, songSources: source, originSongSources: source, playState: AudioPlayState.loading));
     _playSong();
     _addToRecentPlayed(song);
   }
@@ -209,6 +238,7 @@ class AudioCubit extends Cubit<AudioState> {
 
   /// Play Next Song
   void playNextSong() {
+    'Ids : ${state.songSources.map((e) => e.id).toList()}'.logD;
     if (_type == null) {
       _playLocalNext();
     } else {
@@ -238,7 +268,17 @@ class AudioCubit extends Cubit<AudioState> {
 
   /// Toggle Shuffle Song
   void toggleShuffleSong() {
-    emit(state.copyWith(isShuffle: !state.isShuffle));
+    if (!state.isShuffle) {
+      final list =
+          state.songSources.toList()
+            ..removeWhere((element) => element.id == state.song?.id)
+            ..insert(0, state.song!)
+            ..shuffle();
+      emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
+    } else {
+      final list = state.originSongSources.toList();
+      emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
+    }
   }
 }
 

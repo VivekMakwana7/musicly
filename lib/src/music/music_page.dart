@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/enums/audio_play_state.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
-import 'package:musicly/core/logger.dart';
 import 'package:musicly/gen/assets.gen.dart';
-import 'package:musicly/src/music/widgets/music_icon.dart';
 import 'package:musicly/src/music/widgets/music_like_icon.dart';
 import 'package:musicly/src/music/widgets/music_next_icon.dart';
 import 'package:musicly/src/music/widgets/music_play_pause_icon.dart';
@@ -27,7 +24,6 @@ class MusicPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<AudioCubit>();
     return Scaffold(
       body: SafeArea(
         child: Padding(
