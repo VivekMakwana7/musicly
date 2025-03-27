@@ -27,4 +27,9 @@ class AppCubit extends Cubit<AppState> {
   void resetState() {
     emit(AppResetState());
   }
+
+  /// For Library song played
+  void librarySongPlayed(String libraryId) {
+    emit(LibrarySongPlay(libraryId: libraryId));
+  }
 }

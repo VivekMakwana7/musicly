@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/library/cubit/library_cubit.dart';
 import 'package:musicly/widgets/app_button.dart';
 import 'package:musicly/widgets/app_text_field.dart';
@@ -64,6 +66,9 @@ class LibraryPage extends StatelessWidget {
                                   onPressed: () => cubit.onPlaylistRemoveTap(index),
                                   icon: const Icon(Icons.cancel_outlined),
                                 ),
+                                onTap: () {
+                                  context.pushNamed(AppRoutes.libraryDetailPage, extra: {'libraryId': playlist.id});
+                                },
                               ),
                             );
                           },

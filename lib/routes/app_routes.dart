@@ -46,4 +46,7 @@ final class AppRoutes {
 
   /// The route path for the music player screen
   static const String musicPlayerPage = 'music-player-page';
+
+  /// The route path for the Library detail screen
+  static const String libraryDetailPage = 'library-detail-page';
 }

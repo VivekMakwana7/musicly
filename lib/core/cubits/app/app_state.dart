@@ -36,3 +36,12 @@ final class PlaylistSongPlay extends AppState {
 
 /// For reset App state
 final class AppResetState extends AppState {}
+
+/// State for Library song Play
+final class LibrarySongPlay extends AppState {
+  /// Constructor
+  LibrarySongPlay({required this.libraryId});
+
+  /// For navigate to Particular Library Id
+  final String libraryId;
+}

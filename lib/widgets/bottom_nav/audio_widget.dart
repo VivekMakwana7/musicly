@@ -61,6 +61,9 @@ class AudioWidget extends StatelessWidget {
                         case PlaylistSongPlay(playlistId: final playlistId)
                             when fullHistoryUris.last != AppRoutes.playlistDetailPage.navPath:
                           context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlistId});
+                        case LibrarySongPlay(libraryId: final libraryId)
+                            when fullHistoryUris.last != AppRoutes.libraryDetailPage.navPath:
+                          context.pushNamed(AppRoutes.libraryDetailPage, extra: {'libraryId': libraryId});
                         case _:
                           context.pushNamed(AppRoutes.musicPlayerPage);
                       }
