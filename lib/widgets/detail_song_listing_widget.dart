@@ -83,7 +83,6 @@ class DetailSongListingWidget extends StatelessWidget {
                           if (isPlaying) {
                             context.pushNamed(AppRoutes.musicPlayerPage);
                           } else {
-                            // Injector.instance<AudioCubit>().setLocalSource(song: songs[index], source: songs);
                             onTap?.call(index);
                           }
                         }

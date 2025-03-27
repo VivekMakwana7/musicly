@@ -81,6 +81,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                           type: SourceType.search,
                           songId: topTrending.id,
                           query: context.read<SearchCubit>().searchController.text.trim(),
+                          isPaginated: true,
                         );
                       },
                     ),

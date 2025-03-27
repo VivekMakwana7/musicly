@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
+import 'package:musicly/core/cubits/audio/audio_cubit.dart';
+import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/src/song/cubit/search_song_cubit.dart';
@@ -30,28 +32,35 @@ class SearchSongPage extends StatelessWidget {
               ApiState.idle || ApiState.loading => const SearchSongLoadingWidget(),
               ApiState.success || ApiState.loadingMore => NotificationListener<UserScrollNotification>(
                 onNotification: context.read<SearchSongCubit>().scrollListener,
-                child: ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-                  itemBuilder: (context, index) {
-                    final song = state.songs[index];
-                    return SongItemWidget(
-                      description: song.label ?? '',
-                      songImageURL: song.image?.last.url ?? '',
-                      title: song.name ?? '',
-                      onTap: () {
-                        Injector.instance<AppCubit>().resetState();
-                        // Injector.instance<AudioCubit>().setNetworkSource(
-                        //   type: SourceType.searchSong,
-                        //   query: query ?? '',
-                        //   songId: song.id,
-                        //   page: context.read<SearchSongCubit>().page,
-                        //   sources: state.songs,
-                        // );
+                child: BlocSelector<AudioCubit, AudioState, String?>(
+                  selector: (state) => state.song?.id,
+                  builder: (context, songId) {
+                    return ListView.separated(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                      itemBuilder: (context, index) {
+                        final song = state.songs[index];
+                        return SongItemWidget(
+                          description: song.label ?? '',
+                          songImageURL: song.image?.last.url ?? '',
+                          title: song.name ?? '',
+                          isPlaying: songId == song.id,
+                          onTap: () {
+                            Injector.instance<AppCubit>().resetState();
+                            Injector.instance<AudioCubit>().loadSourceData(
+                              query: query ?? '',
+                              songId: song.id,
+                              page: context.read<SearchSongCubit>().page,
+                              type: SourceType.search,
+                              songs: state.songs,
+                              isPaginated: true,
+                            );
+                          },
+                        );
                       },
+                      separatorBuilder: (context, index) => SizedBox(height: 16.h),
+                      itemCount: state.songs.length,
                     );
                   },
-                  separatorBuilder: (context, index) => SizedBox(height: 16.h),
-                  itemCount: state.songs.length,
                 ),
               ),
               _ => const SizedBox.shrink(),

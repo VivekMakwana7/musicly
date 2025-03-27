@@ -79,6 +79,7 @@ class SongSearchWidget extends StatelessWidget {
                           type: SourceType.search,
                           songId: song.id,
                           query: query,
+                          isPaginated: true,
                         );
                       },
                     );

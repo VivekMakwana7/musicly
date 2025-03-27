@@ -85,7 +85,7 @@ class SourceData {
 /// Abstract interface for handlers that fetch song data from various sources.
 abstract class SourceHandler {
   /// Retrieves song data from a specific source.
-  Future<SourceData> getSourceData({int page = 1, String? query});
+  Future<SourceData> getSourceData({int page = 1, String? query, bool isPaginated = false});
 
   /// The type of the data source handled by this instance.
   SourceType get sourceType;
@@ -109,7 +109,7 @@ class RecentPlayedSourceHandler implements SourceHandler {
   SourceType get sourceType => SourceType.recentPlayed;
 
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 20, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 20, String? query, bool isPaginated = false}) async {
     return SourceData(songs: Injector.instance<AppDB>().recentPlayedSong, sourceType: SourceType.recentPlayed);
   }
 }
@@ -120,7 +120,7 @@ class LikedSongsSourceHandler implements SourceHandler {
   SourceType get sourceType => SourceType.liked;
 
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query, bool isPaginated = false}) async {
     return SourceData(songs: Injector.instance<AppDB>().likedSongs, sourceType: SourceType.liked);
   }
 }
@@ -131,7 +131,7 @@ class SearchHistorySourceHandler implements SourceHandler {
   SourceType get sourceType => SourceType.searchHistory;
 
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query, bool isPaginated = false}) async {
     return SourceData(songs: Injector.instance<AppDB>().songSearchHistory, sourceType: SourceType.searchHistory);
   }
 }
@@ -142,7 +142,7 @@ class PlaylistSourceHandler implements SourceHandler {
   SourceType get sourceType => SourceType.playlist;
 
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query, bool isPaginated = false}) async {
     return SourceData(songs: Injector.instance<AppDB>().songSearchHistory, sourceType: SourceType.searchHistory);
   }
 }
@@ -156,13 +156,12 @@ class SearchSourceHandler implements SourceHandler {
   SourceType get sourceType => SourceType.search;
 
   @override
-  Future<SourceData> getSourceData({int page = 1, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, String? query, bool isPaginated = true}) async {
     final searchResult = await _fetchSearchSongsFromNetwork(page: page, query: query ?? '');
-    '_hasMoreResult : $_hasMoreResult'.logD;
     return SourceData(
       songs: searchResult,
       sourceType: sourceType,
-      isPaginated: true,
+      isPaginated: isPaginated,
       currentPage: page,
       hasMoreData: _hasMoreResult,
       query: query,
@@ -195,7 +194,7 @@ class SearchSourceHandler implements SourceHandler {
 /// Handles retrieving songs from a search for albums.
 class SearchAlbumSourceHandler implements SourceHandler {
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query, bool isPaginated = true}) async {
     return SourceData(songs: [], sourceType: sourceType, isPaginated: true, currentPage: page);
   }
 
@@ -206,7 +205,7 @@ class SearchAlbumSourceHandler implements SourceHandler {
 /// Handles retrieving songs from a search for artists.
 class SearchArtistSourceHandler implements SourceHandler {
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query, bool isPaginated = false}) async {
     return SourceData(songs: [], sourceType: sourceType, isPaginated: true, currentPage: page);
   }
 
@@ -217,7 +216,7 @@ class SearchArtistSourceHandler implements SourceHandler {
 /// Handles retrieving songs from a search for playlists.
 class SearchPlaylistSourceHandler implements SourceHandler {
   @override
-  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query}) async {
+  Future<SourceData> getSourceData({int page = 1, int perPage = 10, String? query, bool isPaginated = false}) async {
     return SourceData(songs: [], sourceType: sourceType, isPaginated: true, currentPage: page);
   }
 

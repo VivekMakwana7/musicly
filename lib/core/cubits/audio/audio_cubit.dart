@@ -103,6 +103,7 @@ class AudioCubit extends Cubit<AudioState> {
 
   /// Play Next Song
   Future<void> playNextSong() async {
+    await _audioPlayer.seek(Duration.zero);
     if (_currentSource != null) {
       await _loadMoreData();
       final currentIndex = _currentSource!.songs.indexOf(state.song!);
@@ -174,10 +175,34 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   /// Load source data by SourceType
-  Future<void> loadSourceData({required SourceType type, required String songId, String? query, int page = 1}) async {
+  Future<void> loadSourceData({
+    required SourceType type,
+    required String songId,
+    String? query,
+    int page = 1,
+    List<DbSongModel> songs = const [],
+    bool isPaginated = false,
+  }) async {
     emit(state.copyWith(playState: AudioPlayState.loading));
+
+    if (_currentSource != null && _currentSource!.sourceType == type) {
+      'Already have source and update song'.logD;
+      _currentSource = _currentSource!..copyWith(query: query, sourceType: type, songs: songs);
+      final songIndex = _currentSource!.songs.indexWhere((element) => element.id == songId);
+      _setSource(songIndex);
+      return;
+    }
+
+    'Assigning new source and play song\nSource data : [$type]\nSong will play: $songId\nSearch Query: $query\nPage number : $page'
+        .logD;
+    if (songs.isNotEmpty) {
+      'Load Sources : ${songs.map((e) => e.id).toList()}'.logD;
+    }
     final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == type);
-    _currentSource = await handler.getSourceData(query: query, page: page);
+    _currentSource =
+        songs.isEmpty
+            ? await handler.getSourceData(query: query, page: page)
+            : SourceData(songs: songs, sourceType: type, isPaginated: isPaginated, currentPage: page, query: query);
     if (_currentSource != null) {
       final songIndex = _currentSource!.songs.indexWhere((element) => element.id == songId);
       _setSource(songIndex, isFromLoadSource: true);
@@ -197,6 +222,9 @@ class AudioCubit extends Cubit<AudioState> {
 
   bool _checkNextButtonDisabledOrNot() {
     if (_currentSource != null) {
+      if (_currentSource!.songs.length == 1) {
+        return true;
+      }
       return state.currentIndex == _currentSource!.songs.length - 1 && !state.isRepeat;
     }
     return false;
