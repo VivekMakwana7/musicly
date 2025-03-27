@@ -6,7 +6,7 @@ import 'package:musicly/widgets/network_image_widget.dart';
 /// Artist Item Widget
 class ArtistItemWidget extends StatelessWidget {
   /// Artist Item Widget Constructor
-  const ArtistItemWidget({required this.artistImageURL, required this.artistName, super.key, this.onTap});
+  const ArtistItemWidget({required this.artistImageURL, required this.artistName, super.key, this.onTap, this.action});
 
   /// Artist Image URL
   final String artistImageURL;
@@ -16,6 +16,9 @@ class ArtistItemWidget extends StatelessWidget {
 
   /// On Artist Item tap handle
   final VoidCallback? onTap;
+
+  /// For display action widget
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,7 @@ class ArtistItemWidget extends StatelessWidget {
           spacing: 12.w,
           children: [
             ClipOval(child: NetworkImageWidget(url: artistImageURL)),
-            Flexible(
+            Expanded(
               child: Text(
                 artistName,
                 maxLines: 2,
@@ -40,7 +43,7 @@ class ArtistItemWidget extends StatelessWidget {
                 style: context.textTheme.bodyMedium,
               ),
             ),
-            const SizedBox.shrink(),
+            if (action != null) ...[const Spacer(), action!],
           ],
         ),
       ),

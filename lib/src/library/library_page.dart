@@ -21,49 +21,67 @@ class LibraryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-  create: (context) => LibraryCubit(),
-  child: Scaffold(
-      appBar: AppBar(title: Text(greeting)),
-      body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 16.w),
-        child: BlocBuilder<LibraryCubit, LibraryState>(
-  builder: (context, state) {
-    final cubit = context.read<LibraryCubit>();
-    return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 20.h),
-            Row(
-              spacing: 12.w,
-              children:  [
-                Expanded(flex:8,child: AppTextField(hintText: 'New Playlist',controller: cubit.playlistController,)),
-                const Expanded(flex: 3, child: AppButton(name: 'New')),
-              ],
-            ),
-            SizedBox(height: 20.h),
-            const DetailTitleWidget(title: 'Playlists'),
-            SizedBox(height: 18.h),
-            Expanded(child: StreamBuilder(
-              stream: cubit.playlistStream,
-              builder: (context,_) {
-                final list  = Injector.instance<AppDB>().songPlaylist;
-                return ListView.separated(itemBuilder: (context, index) {
-                  final playlist = list[index];
-                  return SizedBox(height: 54.h, child: ArtistItemWidget(artistImageURL: playlist.image, artistName: playlist.name));
-                }, separatorBuilder: (context, index) => SizedBox(height: 12.h,), itemCount: list.length,);
-              },
-            ),),
-            SizedBox(height: 20.h),
-          ],
-        );
-  },
-),
+      create: (context) => LibraryCubit(),
+      child: Scaffold(
+        appBar: AppBar(title: Text(greeting)),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: BlocBuilder<LibraryCubit, LibraryState>(
+            builder: (context, state) {
+              final cubit = context.read<LibraryCubit>();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 20.h),
+                  Row(
+                    spacing: 12.w,
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: AppTextField(hintText: 'New Playlist', controller: cubit.playlistController),
+                      ),
+                      Expanded(flex: 3, child: AppButton(name: 'New', onTap: cubit.onNewTap)),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+                  const DetailTitleWidget(title: 'Playlists'),
+                  SizedBox(height: 18.h),
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: cubit.playlistStream,
+                      builder: (context, _) {
+                        final list = Injector.instance<AppDB>().songPlaylist;
+                        return ListView.separated(
+                          itemBuilder: (context, index) {
+                            final playlist = list[index];
+                            return SizedBox(
+                              height: 54.h,
+                              child: ArtistItemWidget(
+                                artistImageURL: playlist.image,
+                                artistName: playlist.name,
+                                action: IconButton(
+                                  onPressed: () => cubit.onPlaylistRemoveTap(index),
+                                  icon: const Icon(Icons.cancel_outlined),
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                          itemCount: list.length,
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                ],
+              );
+            },
+          ),
+        ),
       ),
-    ),
-);
+    );
   }
-
 
   /// Returns an appropriate greeting based on the current hour of the day
   String get greeting {

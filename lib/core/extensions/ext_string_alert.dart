@@ -25,7 +25,7 @@ extension StringAlertX on String {
         ),
       );
     },
-    duration: duration ?? const Duration(seconds: 5),
+    duration: duration ?? const Duration(seconds: 3),
   );
 
   /// to show success alert
@@ -47,7 +47,7 @@ extension StringAlertX on String {
         backgroundColor: const Color(0xFF282C30),
       );
     },
-    duration: duration ?? const Duration(seconds: 5),
+    duration: duration ?? const Duration(seconds: 3),
   );
 
   /// to show info alert
