@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
-import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/core/theme/theme.dart';
 import 'package:musicly/gen/assets.gen.dart';
@@ -84,7 +83,7 @@ class DetailSongListingWidget extends StatelessWidget {
                           if (isPlaying) {
                             context.pushNamed(AppRoutes.musicPlayerPage);
                           } else {
-                            Injector.instance<AudioCubit>().setLocalSource(song: songs[index], source: songs);
+                            // Injector.instance<AudioCubit>().setLocalSource(song: songs[index], source: songs);
                             onTap?.call(index);
                           }
                         }

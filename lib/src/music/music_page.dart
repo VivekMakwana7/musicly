@@ -25,7 +25,6 @@ class MusicPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<AudioCubit>().checkLike();
     return Scaffold(
       body: SafeArea(
         child: Padding(

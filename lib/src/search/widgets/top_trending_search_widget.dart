@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
+import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
@@ -30,61 +31,66 @@ class TopTrendingSearchWidget extends StatelessWidget {
       spacing: 12.h,
       children: [
         Text('Top', style: context.textTheme.titleMedium),
-        Flexible(
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final topTrending = topTrendingList[index];
-              return switch (topTrending.type) {
-                SearchItemType.artist => Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height: 56.h,
-                    width: context.width * 0.5 - 32.w,
-                    child: ArtistItemWidget(
-                      artistImageURL: topTrending.image?.last.url ?? '',
-                      artistName: topTrending.title ?? '',
-                      onTap: () {
-                        context.pushNamed(AppRoutes.artistDetailPage, extra: {'artistId': topTrending.id});
-                      },
+        BlocSelector<AudioCubit, AudioState, String?>(
+          selector: (state) => state.song?.id,
+          builder: (context, songId) {
+            return Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final topTrending = topTrendingList[index];
+                  return switch (topTrending.type) {
+                    SearchItemType.artist => Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        height: 56.h,
+                        width: context.width * 0.5 - 32.w,
+                        child: ArtistItemWidget(
+                          artistImageURL: topTrending.image?.last.url ?? '',
+                          artistName: topTrending.title ?? '',
+                          onTap: () {
+                            context.pushNamed(AppRoutes.artistDetailPage, extra: {'artistId': topTrending.id});
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                SearchItemType.album => Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height: 176.h,
-                    width: 98.w,
-                    child: AlbumItemWidget(
-                      title: topTrending.title ?? '',
-                      albumImageURL: topTrending.image?.last.url ?? '',
+                    SearchItemType.album => Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        height: 176.h,
+                        width: 98.w,
+                        child: AlbumItemWidget(
+                          title: topTrending.title ?? '',
+                          albumImageURL: topTrending.image?.last.url ?? '',
+                          description: topTrending.description ?? '',
+                          onTap: () {
+                            context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': topTrending.id});
+                          },
+                        ),
+                      ),
+                    ),
+                    _ => SongItemWidget(
                       description: topTrending.description ?? '',
+                      songImageURL: topTrending.image?.last.url ?? '',
+                      title: topTrending.title ?? '',
+                      isPlaying: songId == topTrending.id,
                       onTap: () {
-                        context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': topTrending.id});
+                        Injector.instance<AppCubit>().resetState();
+                        Injector.instance<AudioCubit>().loadSourceData(
+                          type: SourceType.search,
+                          songId: topTrending.id,
+                          query: context.read<SearchCubit>().searchController.text.trim(),
+                        );
                       },
                     ),
-                  ),
-                ),
-                _ => SongItemWidget(
-                  description: topTrending.description ?? '',
-                  songImageURL: topTrending.image?.last.url ?? '',
-                  title: topTrending.title ?? '',
-                  onTap: () {
-                    Injector.instance<AppCubit>().resetState();
-                    Injector.instance<AudioCubit>().setNetworkSource(
-                      type: SourceType.searchSong,
-                      query: context.read<SearchCubit>().searchController.text.trim(),
-                      page: 1,
-                      songId: topTrending.id,
-                    );
-                  },
-                ),
-              };
-            },
-            separatorBuilder: (context, index) => SizedBox(height: 16.h),
-            itemCount: topTrendingList.length,
-          ),
+                  };
+                },
+                separatorBuilder: (context, index) => SizedBox(height: 16.h),
+                itemCount: topTrendingList.length,
+              ),
+            );
+          },
         ),
       ],
     );

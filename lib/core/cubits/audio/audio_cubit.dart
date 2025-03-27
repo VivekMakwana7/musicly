@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
@@ -8,8 +9,6 @@ import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/audio_play_state.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
-import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
 
 part 'audio_state.dart';
 
@@ -22,13 +21,8 @@ class AudioCubit extends Cubit<AudioState> {
 
   /// Instance of AudioPlayer
   final AudioPlayer _audioPlayer = AudioPlayer();
-  final _searchRepo = Injector.instance<SearchRepository>();
 
-  /// For check whether has more data
-  bool hasMoreSearchResults = false;
-  SourceType? _type;
-  int _page = 1;
-  String? _query;
+  SourceData? _currentSource;
 
   @override
   Future<void> close() {
@@ -43,49 +37,6 @@ class AudioCubit extends Cubit<AudioState> {
     }
     recentPlayedSongs.insert(0, song);
     Injector.instance<AppDB>().recentPlayedSong = recentPlayedSongs.toSet().toList();
-  }
-
-  Future<void> _searchSongs({required String query, required int page, String? songId}) async {
-    final param = {'query': query, 'page': page, 'limit': 10};
-    'param : $param'.logD;
-    final res = await _searchRepo.searchSongByQuery(ApiRequest(params: param));
-    res.when(
-      success: (data) {
-        hasMoreSearchResults = data.results?.isNotEmpty ?? false;
-        emit(
-          state.copyWith(
-            songSources: [...state.songSources, ...?data.results],
-            originSongSources: [...state.originSongSources, ...?data.results],
-          ),
-        );
-        if (songId != null) {
-          final song = data.results?.firstWhere((element) => element.id == songId);
-          if (song != null) {
-            _setSource(song: song, songSource: data.results ?? []);
-            DatabaseHandler.addToSongSearchHistory(song);
-          }
-        }
-      },
-      error: (exception) {
-        'Search song by Query API failed : $exception'.logE;
-        exception.message.showErrorAlert();
-        emit(state.copyWith(playState: AudioPlayState.error));
-      },
-    );
-  }
-
-  void _setSource({required DbSongModel song, required List<DbSongModel> songSource}) {
-    'Network source ${songSource.map((e) => e.id).toList()}'.logD;
-    emit(
-      state.copyWith(
-        song: song,
-        songSources: songSource,
-        originSongSources: songSource,
-        playState: AudioPlayState.loading,
-      ),
-    );
-    _playSong();
-    _addToRecentPlayed(song);
   }
 
   void _initListeners() {
@@ -108,68 +59,9 @@ class AudioCubit extends Cubit<AudioState> {
 
   AudioPlayState _handlePlaybackComplete() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_type == null) {
-        _playLocalNext();
-      } else {
-        _playNetworkNext();
-      }
+      playNextSong();
     });
     return AudioPlayState.idle;
-  }
-
-  void _playLocalNext() {
-    final currentIndex = state.songSources.indexOf(state.song!);
-    if (currentIndex == state.songSources.length - 1 && state.isRepeat) {
-      _playSongAtIndex(0);
-      return;
-    }
-    if (currentIndex < state.songSources.length - 1) {
-      final nextIndex = currentIndex + 1;
-      _playSongAtIndex(nextIndex);
-    } else {
-      'User played all song'.logD;
-      _audioPlayer.stop();
-    }
-  }
-
-  void _playNetworkNext() {
-    final currentIndex = state.songSources.indexOf(state.song!);
-
-    // Load more songs if we're near the end
-    if (currentIndex >= state.songSources.length - 3 && hasMoreSearchResults) {
-      final nextPage = _page + 1;
-      setNetworkSource(type: _type!, query: _query!, page: nextPage);
-    }
-
-    if (currentIndex == state.songSources.length - 1 && state.isRepeat) {
-      _playSongAtIndex(0);
-      return;
-    }
-    if (currentIndex < state.songSources.length - 1) {
-      final nextIndex = currentIndex + 1;
-      _playSongAtIndex(nextIndex);
-    } else {
-      'User played all song'.logD;
-      _audioPlayer.stop();
-      emit(state.copyWith(playState: AudioPlayState.idle));
-    }
-  }
-
-  void _playSongAtIndex(int index) {
-    final song = state.songSources[index];
-    setLocalSource(song: song, source: state.songSources);
-  }
-
-  /// Sets audio source from local database
-  void setLocalSource({required DbSongModel song, required List<DbSongModel> source}) {
-    if (_type != null) {
-      _page = 1;
-      _query = null;
-      _type = null;
-    }
-    emit(state.copyWith(song: song, songSources: source, originSongSources: source, playState: AudioPlayState.loading));
-    _playSong();
-    _addToRecentPlayed(song);
   }
 
   Future<void> _playSong() async {
@@ -181,6 +73,7 @@ class AudioCubit extends Cubit<AudioState> {
     }
 
     final url = song.downloadUrl!.last.url;
+    _checkLike();
     'Playing: ${song.name} | ${song.id} | Duration: ${song.duration}'.logD;
 
     try {
@@ -190,34 +83,6 @@ class AudioCubit extends Cubit<AudioState> {
       'Playback error: $e'.logE;
       'Playback failed. Please try again'.showErrorAlert();
       emit(state.copyWith(playState: AudioPlayState.error));
-    }
-  }
-
-  /// Sets audio source from network based on type
-  void setNetworkSource({
-    required SourceType type,
-    required String query,
-    String? songId,
-    int page = 0,
-    List<DbSongModel>? sources,
-  }) {
-    _type = type;
-    _query = query;
-    _page = page;
-
-    switch (type) {
-      case SourceType.searchSong:
-        if (sources == null) {
-          _searchSongs(query: query, page: page, songId: songId);
-        } else {
-          emit(state.copyWith(songSources: sources, originSongSources: sources));
-          final currentIndex = state.songSources.indexWhere((element) => element.id == songId);
-          _playSongAtIndex(currentIndex);
-        }
-      case SourceType.searchPlaylistSong:
-      // TODO(VIVEK): Implement playlist song search
-      case SourceType.searchArtistSong:
-      // TODO(VIVEK): Implement artist song search
     }
   }
 
@@ -237,30 +102,49 @@ class AudioCubit extends Cubit<AudioState> {
   }
 
   /// Play Next Song
-  void playNextSong() {
-    'Ids : ${state.songSources.map((e) => e.id).toList()}'.logD;
-    if (_type == null) {
-      _playLocalNext();
+  Future<void> playNextSong() async {
+    if (_currentSource != null) {
+      await _loadMoreData();
+      final currentIndex = _currentSource!.songs.indexOf(state.song!);
+      if (currentIndex == _currentSource!.songs.length - 1 && state.isRepeat) {
+        _setSource(0);
+        return;
+      }
+      if (currentIndex < _currentSource!.songs.length - 1) {
+        final nextIndex = currentIndex + 1;
+        _setSource(nextIndex);
+      } else {
+        'User played all song'.logD;
+        await _audioPlayer.stop();
+      }
     } else {
-      _playNetworkNext();
+      'Source not found'.logE;
     }
   }
 
   /// Play Previous Song
   void playPreviousSong() {
-    final index = state.songSources.indexOf(state.song!);
-    if (index > 0) {
-      _playSongAtIndex(index - 1);
+    if (_currentSource != null) {
+      final index = _currentSource!.songs.indexOf(state.song!);
+      if (index > 0) {
+        _setSource(index - 1);
+      }
+    } else {
+      'Source not found'.logE;
     }
   }
 
   /// Toggle Like Song
   void toggleLikeSong({bool? isLiked}) {
-    final song = state.song?.copyWith(isLiked: isLiked ?? !(state.song?.isLiked ?? false));
-    final sourceList = state.songSources.toList();
-    sourceList[sourceList.indexOf(state.song!)] = song!;
-    emit(state.copyWith(song: song, songSources: sourceList));
-    if (isLiked == null) DatabaseHandler.toggleLikedSong(song);
+    if (_currentSource != null) {
+      final song = state.song?.copyWith(isLiked: isLiked ?? !(state.song?.isLiked ?? false));
+      final sourceList = _currentSource!.songs.toList();
+      sourceList[sourceList.indexOf(state.song!)] = song!;
+      emit(state.copyWith(song: song));
+      if (isLiked == null) DatabaseHandler.toggleLikedSong(song);
+    } else {
+      'Source not found'.logE;
+    }
   }
 
   /// Toggle Repeat Song
@@ -270,34 +154,71 @@ class AudioCubit extends Cubit<AudioState> {
 
   /// Toggle Shuffle Song
   void toggleShuffleSong() {
-    if (!state.isShuffle) {
-      final list =
-          state.songSources.toList()
-            ..removeWhere((element) => element.id == state.song?.id)
-            ..insert(0, state.song!)
-            ..shuffle();
-      emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
-    } else {
-      final list = state.originSongSources.toList();
-      emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
-    }
+    // if (!state.isShuffle) {
+    //   final list =
+    //       state.songSources.toList()
+    //         ..removeWhere((element) => element.id == state.song?.id)
+    //         ..insert(0, state.song!)
+    //         ..shuffle();
+    //   emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
+    // } else {
+    //   final list = state.originSongSources.toList();
+    //   emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
+    // }
   }
 
   /// For check Like
-  void checkLike() {
+  void _checkLike() {
     final isLiked = DatabaseHandler.isSongLiked(state.song!);
     toggleLikeSong(isLiked: isLiked);
   }
-}
 
-///
-enum SourceType {
-  ///
-  searchSong,
+  /// Load source data by SourceType
+  Future<void> loadSourceData({required SourceType type, required String songId, String? query, int page = 1}) async {
+    emit(state.copyWith(playState: AudioPlayState.loading));
+    final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == type);
+    _currentSource = await handler.getSourceData(query: query, page: page);
+    if (_currentSource != null) {
+      final songIndex = _currentSource!.songs.indexWhere((element) => element.id == songId);
+      _setSource(songIndex, isFromLoadSource: true);
+    } else {
+      'Source not found'.logE;
+      'Source not found'.showErrorAlert();
+    }
+  }
 
-  ///
-  searchPlaylistSong,
+  void _setSource(int index, {bool isFromLoadSource = false}) {
+    final song = _currentSource!.songs[index];
+    emit(state.copyWith(song: song, currentIndex: index, isNextDisabled: _checkNextButtonDisabledOrNot()));
+    _playSong();
+    _addToRecentPlayed(song);
+    if (isFromLoadSource) _addSearchHistory(song);
+  }
 
-  ///
-  searchArtistSong,
+  bool _checkNextButtonDisabledOrNot() {
+    if (_currentSource != null) {
+      return state.currentIndex == _currentSource!.songs.length - 1 && !state.isRepeat;
+    }
+    return false;
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_currentSource != null &&
+        _currentSource!.isPaginated &&
+        (_currentSource!.songs.length - state.currentIndex < 3)) {
+      final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == _currentSource!.sourceType);
+      final newData = await handler.getSourceData(page: _currentSource!.currentPage + 1, query: _currentSource!.query);
+      _currentSource = _currentSource!.copyWith(
+        songs: [..._currentSource!.songs, ...newData.songs],
+        currentPage: newData.currentPage,
+        hasMoreData: newData.hasMoreData,
+      );
+    }
+  }
+
+  void _addSearchHistory(DbSongModel song) {
+    if (_currentSource != null && _currentSource!.sourceType == SourceType.search) {
+      DatabaseHandler.addToSongSearchHistory(song);
+    }
+  }
 }

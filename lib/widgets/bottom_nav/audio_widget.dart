@@ -11,6 +11,7 @@ import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/music/widgets/music_seek_bar_widget.dart';
+import 'package:musicly/widgets/bottom_nav/audio_loading_widget.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 
 /// Audio Widget
@@ -26,6 +27,10 @@ class AudioWidget extends StatelessWidget {
       builder: (context, state) {
         if (state.playState == AudioPlayState.idle) {
           return const SizedBox.shrink();
+        }
+
+        if (state.playState == AudioPlayState.loading) {
+          return const AudioLoadingWidget();
         }
 
         return Padding(
@@ -102,7 +107,7 @@ class AudioWidget extends StatelessWidget {
                         Row(
                           children: [
                             BlocSelector<AudioCubit, AudioState, bool>(
-                              selector: (state) => state.currentIndex == 0,
+                              selector: (state) => state.isPrevDisabled,
                               builder: (context, isDisabled) {
                                 return IconButton(
                                   onPressed: isDisabled ? () {} : cubit.playPreviousSong,
@@ -145,8 +150,7 @@ class AudioWidget extends StatelessWidget {
                               },
                             ),
                             BlocSelector<AudioCubit, AudioState, bool>(
-                              selector:
-                                  (state) => state.currentIndex == state.songSources.length - 1 && !state.isRepeat,
+                              selector: (state) => state.isNextDisabled,
                               builder: (context, isDisabled) {
                                 return IconButton(
                                   onPressed: isDisabled ? () {} : cubit.playNextSong,

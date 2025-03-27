@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 
 /// Song Item Widget
@@ -12,6 +13,7 @@ class SongItemWidget extends StatelessWidget {
     required this.title,
     super.key,
     this.onTap,
+    this.isPlaying = false,
   });
 
   /// Song Image URL
@@ -25,6 +27,9 @@ class SongItemWidget extends StatelessWidget {
 
   /// On Tap
   final VoidCallback? onTap;
+
+  /// Is Current Song is Playing
+  final bool isPlaying;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +75,7 @@ class SongItemWidget extends StatelessWidget {
                   ],
                 ),
               ),
+              if (isPlaying) Assets.json.songPlay.lottie(height: 26.h, width: 26.h),
             ],
           ),
         ),

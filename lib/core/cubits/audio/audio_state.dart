@@ -7,12 +7,12 @@ final class AudioState {
   const AudioState({
     this.playState = AudioPlayState.idle,
     this.song,
-    this.songSources = const [],
     this.positioned = Duration.zero,
     this.duration = Duration.zero,
     this.isRepeat = false,
     this.isShuffle = false,
-    this.originSongSources = const [],
+    this.currentIndex = 1,
+    this.isNextDisabled = false,
   });
 
   /// [AudioPlayState] of the audio
@@ -21,11 +21,8 @@ final class AudioState {
   /// Current song for play
   final DbSongModel? song;
 
-  /// List of Songs for play song in loop
-  final List<DbSongModel> songSources;
-
   /// current index of Playing song
-  int get currentIndex => songSources.indexWhere((element) => element.id == song?.id);
+  final int currentIndex;
 
   /// Current Playing song positioned in Duration
   final Duration positioned;
@@ -39,29 +36,32 @@ final class AudioState {
   /// For is source is repeat or not
   final bool isRepeat;
 
-  /// List of Songs
-  final List<DbSongModel> originSongSources;
+  /// For check Next Button Disabled or not
+  final bool isNextDisabled;
+
+  /// Is Prev button disabled
+  bool get isPrevDisabled => currentIndex == 0;
 
   /// Copy with
   AudioState copyWith({
     AudioPlayState? playState,
     DbSongModel? song,
-    List<DbSongModel>? songSources,
     Duration? positioned,
     Duration? duration,
     bool? isShuffle,
     bool? isRepeat,
-    List<DbSongModel>? originSongSources,
+    int? currentIndex,
+    bool? isNextDisabled,
   }) {
     return AudioState(
       playState: playState ?? this.playState,
       song: song ?? this.song,
-      songSources: songSources ?? this.songSources,
       positioned: positioned ?? this.positioned,
       duration: duration ?? this.duration,
       isShuffle: isShuffle ?? this.isShuffle,
       isRepeat: isRepeat ?? this.isRepeat,
-      originSongSources: originSongSources ?? this.originSongSources,
+      currentIndex: currentIndex ?? this.currentIndex,
+      isNextDisabled: isNextDisabled ?? this.isNextDisabled,
     );
   }
 }
