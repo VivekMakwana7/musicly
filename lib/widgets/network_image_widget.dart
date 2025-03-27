@@ -29,7 +29,8 @@ class NetworkImageWidget extends StatelessWidget {
       progressIndicatorBuilder:
           (context, url, downloadProgress) => const Skeletonizer(child: ColoredBox(color: Colors.grey)),
       errorWidget:
-          (context, url, error) => SizedBox(height: 50.h, width: 50.h, child: Center(child: Assets.icons.icLike.svg())),
+          (context, url, error) =>
+              SizedBox(height: 50.h, width: 50.h, child: Center(child: Assets.icons.icHeart.svg())),
       fit: fit,
       height: height,
       width: width,

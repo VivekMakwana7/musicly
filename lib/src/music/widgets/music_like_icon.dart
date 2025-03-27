@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/gen/assets.gen.dart';
 
@@ -23,11 +24,12 @@ class MusicLikeIcon extends StatelessWidget {
                     ScaleTransition(scale: animation, child: FadeTransition(opacity: animation, child: child)),
             child:
                 isLiked
-                    ? Assets.icons.icLike.svg(
-                      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    ? Assets.icons.icHeartFilled.svg(
                       key: ValueKey('liked-${cubit.state.song?.id}'),
+                      width: 20.h,
+                      height: 20.h,
                     )
-                    : Assets.icons.icLike.svg(key: ValueKey('unliked-${cubit.state.song?.id}')),
+                    : Assets.icons.icHeart.svg(key: ValueKey('unliked-${cubit.state.song?.id}')),
           ),
         );
       },

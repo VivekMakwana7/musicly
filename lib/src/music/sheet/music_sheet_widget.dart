@@ -68,8 +68,11 @@ class MusicSheetWidget extends StatelessWidget {
               ),
               SizedBox(height: 30.h),
               MusicSheetMenu(
-                icon: Assets.icons.icLike.svg(colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-                title: 'Like',
+                icon:
+                    song.isLiked
+                        ? Assets.icons.icHeartFilled.svg(width: 20.h, height: 20.h)
+                        : Assets.icons.icHeart.svg(colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+                title: song.isLiked ? 'Liked' : 'Like',
                 onTap: () {
                   Navigator.of(context).pop(MusicSheetResult.liked);
                 },
@@ -158,7 +161,7 @@ class MusicSheetMenu extends StatelessWidget {
       child: Row(
         spacing: 12.w,
         children: [
-          if(icon != null) MusicIcon.medium(icon: icon!),
+          if (icon != null) MusicIcon.medium(icon: icon!),
           Expanded(
             child: DecoratedBox(
               decoration: BoxDecoration(

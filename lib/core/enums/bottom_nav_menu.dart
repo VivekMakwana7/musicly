@@ -41,11 +41,7 @@ extension BottomNavMenuExtension on BottomNavMenu {
   /// Returns the appropriate icon widget based on the menu item
   Widget get icon {
     return switch (this) {
-      BottomNavMenu.home => Assets.icons.icHome.svg(
-        key: const ValueKey('home-un-selected'),
-        height: 20.h,
-        width: 20.h,
-      ),
+      BottomNavMenu.home => Assets.icons.icHome.svg(key: const ValueKey('home-un-selected'), height: 20.h, width: 20.h),
       BottomNavMenu.search => Assets.icons.icSearch.svg(
         key: const ValueKey('search-un-selected'),
         height: 20.h,
@@ -56,7 +52,7 @@ extension BottomNavMenuExtension on BottomNavMenu {
         height: 20.h,
         width: 20.h,
       ),
-      BottomNavMenu.liked => Assets.icons.icLike.svg(
+      BottomNavMenu.liked => Assets.icons.icHeart.svg(
         key: const ValueKey('liked-un-selected'),
         height: 20.h,
         width: 20.h,
@@ -85,7 +81,7 @@ extension BottomNavMenuExtension on BottomNavMenu {
         width: 20.h,
         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
       ),
-      BottomNavMenu.liked => Assets.icons.icLike.svg(
+      BottomNavMenu.liked => Assets.icons.icHeart.svg(
         key: const ValueKey('liked-selected'),
         height: 20.h,
         width: 20.h,
