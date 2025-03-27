@@ -6,6 +6,7 @@ import 'package:musicly/core/rest_utils/api_request.dart';
 import 'package:musicly/core/rest_utils/endpoints.dart';
 import 'package:musicly/src/album/models/search_album_response_model.dart';
 import 'package:musicly/src/artist/models/search_artist_response_model.dart';
+import 'package:musicly/src/artist/song/models/artist_song_model.dart';
 import 'package:musicly/src/search/model/global_search_model.dart';
 import 'package:musicly/src/search_playlist/models/search_playlist_response_model.dart';
 import 'package:musicly/src/song/models/search_song_response_model.dart';
@@ -145,6 +146,21 @@ class SearchRepository {
       dio: dio,
       path: EndPoints.searchPlaylistByQuery,
       jsonMapper: SearchPlaylistResponseModel.fromJson,
+      cancelToken: request.cancelToken,
+      hideKeyboard: request.hideKeyboard,
+      options: request.options,
+      params: request.params,
+      receiveProgress: request.receiveProgress,
+      pathParameter: request.pathParameter,
+    ).get();
+  }
+
+  /// API call for Get Artist Song
+  Future<ApiResult<ArtistSongModel>> getArtistSong(String id, ApiRequest request) {
+    return DioRequest<ArtistSongModel>(
+      dio: dio,
+      path: EndPoints.artistSongs(id),
+      jsonMapper: ArtistSongModel.fromJson,
       cancelToken: request.cancelToken,
       hideKeyboard: request.hideKeyboard,
       options: request.options,

@@ -44,7 +44,7 @@ class SongItemWidget extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: NetworkImageWidget(url: songImageURL, height: 52.h, width: 52.h),
+                child: NetworkImageWidget(url: songImageURL, height: 52.h, width: 52.h, fit: BoxFit.cover),
               ),
               Expanded(
                 child: Column(

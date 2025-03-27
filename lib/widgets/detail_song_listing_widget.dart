@@ -16,7 +16,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// For display Detail page's song listing
 class DetailSongListingWidget extends StatelessWidget {
   /// Detail Song Listing Widget constructor
-  const DetailSongListingWidget({required this.songs, super.key, this.onTap});
+  const DetailSongListingWidget({required this.songs, super.key, this.onTap, this.onViewAllTap});
 
   /// For display Skeletonized widget
   factory DetailSongListingWidget.loading() => const DetailSongListingWidget(songs: []);
@@ -26,6 +26,9 @@ class DetailSongListingWidget extends StatelessWidget {
 
   /// For handle extra activity on Item Tap
   final void Function(int index)? onTap;
+
+  /// For handle View all tap
+  final VoidCallback? onViewAllTap;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +47,21 @@ class DetailSongListingWidget extends StatelessWidget {
           children: [
             Skeletonizer(
               enabled: isLoading,
-              child: Text('Songs', style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Songs', style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight)),
+                  if (onViewAllTap != null)
+                    TextButton(
+                      onPressed: onViewAllTap,
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
+                      child: Text(
+                        'View All',
+                        style: context.textTheme.titleSmall?.copyWith(color: const Color(0xFF11A8FD)),
+                      ),
+                    ),
+                ],
+              ),
             ),
             SizedBox(height: 12.h),
             BlocSelector<AudioCubit, AudioState, String?>(

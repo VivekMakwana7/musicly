@@ -49,4 +49,7 @@ final class AppRoutes {
 
   /// The route path for the Library detail screen
   static const String libraryDetailPage = 'library-detail-page';
+
+  /// The route path for the Artist song screen
+  static const String artistSongPage = 'artist-song-page';
 }

@@ -210,12 +210,10 @@ class AudioCubit extends Cubit<AudioState> {
         if (sources == null) {
           _searchSongs(query: query, page: page, songId: songId);
         } else {
-          emit(state.copyWith(songSources: sources));
+          emit(state.copyWith(songSources: sources, originSongSources: sources));
           final currentIndex = state.songSources.indexWhere((element) => element.id == songId);
           _playSongAtIndex(currentIndex);
         }
-      case SourceType.searchAlbumSong:
-      // TODO(VIVEK): Implement album song search
       case SourceType.searchPlaylistSong:
       // TODO(VIVEK): Implement playlist song search
       case SourceType.searchArtistSong:
@@ -296,9 +294,6 @@ class AudioCubit extends Cubit<AudioState> {
 enum SourceType {
   ///
   searchSong,
-
-  ///
-  searchAlbumSong,
 
   ///
   searchPlaylistSong,

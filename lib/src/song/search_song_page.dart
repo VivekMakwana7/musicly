@@ -37,7 +37,7 @@ class SearchSongPage extends StatelessWidget {
                     final song = state.songs[index];
                     return SongItemWidget(
                       description: song.label ?? '',
-                      songImageURL: song.image?.first.url ?? '',
+                      songImageURL: song.image?.last.url ?? '',
                       title: song.name ?? '',
                       onTap: () {
                         Injector.instance<AppCubit>().resetState();

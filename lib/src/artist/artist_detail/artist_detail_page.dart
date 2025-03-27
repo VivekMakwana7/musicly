@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/gen/assets.gen.dart';
+import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/artist/artist_detail/cubit/artist_detail_cubit.dart';
 import 'package:musicly/widgets/app_back_button.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
@@ -89,6 +91,12 @@ class ArtistDetailPage extends StatelessWidget {
                                 onTap: (index) {
                                   Injector.instance<AppCubit>().artistSongPlayed(artistId);
                                 },
+                                onViewAllTap:
+                                    artist.topSongs!.length >= 10
+                                        ? () {
+                                          context.pushNamed(AppRoutes.artistSongPage, extra: {'artistId': artistId});
+                                        }
+                                        : null,
                               ),
                             ],
 

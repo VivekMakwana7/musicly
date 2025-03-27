@@ -31,4 +31,7 @@ final class EndPoints {
 
   /// Endpoint for Search Playlists By Query
   static const String searchPlaylistByQuery = '/search/playlists';
+
+  /// Endpoint for get Artist Songs
+  static String artistSongs(String id) => '/artists/$id/songs';
 }
