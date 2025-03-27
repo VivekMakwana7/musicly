@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/audio_play_state.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/music/widgets/music_seek_bar_widget.dart';
@@ -45,7 +47,24 @@ class AudioWidget extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.all(16.w),
                   child: GestureDetector(
-                    onTap: () => context.pushNamed(AppRoutes.musicPlayerPage),
+                    onTap: () {
+                      final fullHistoryUris =
+                          appRouter.routerDelegate.currentConfiguration.matches.map((e) => e.matchedLocation).toList();
+
+                      switch (Injector.instance<AppCubit>().state) {
+                        case ArtistSongPlay(artistId: final artistId)
+                            when fullHistoryUris.last != AppRoutes.artistDetailPage.navPath:
+                          context.pushNamed(AppRoutes.artistDetailPage, extra: {'artistId': artistId});
+                        case AlbumSongPlay(albumId: final albumId)
+                            when fullHistoryUris.last != AppRoutes.albumDetailPage.navPath:
+                          context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': albumId});
+                        case PlaylistSongPlay(playlistId: final playlistId)
+                            when fullHistoryUris.last != AppRoutes.playlistDetailPage.navPath:
+                          context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlistId});
+                        case _:
+                          context.pushNamed(AppRoutes.musicPlayerPage);
+                      }
+                    },
                     behavior: HitTestBehavior.opaque,
                     child: Row(
                       spacing: 12.w,

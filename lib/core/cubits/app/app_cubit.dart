@@ -8,8 +8,23 @@ class AppCubit extends Cubit<AppState> {
   /// Constructor
   AppCubit() : super(AppInitial());
 
-  ///
-  void artistSongPlayed(String artistId){
+  /// For Artist song played
+  void artistSongPlayed(String artistId) {
     emit(ArtistSongPlay(artistId: artistId));
+  }
+
+  /// For Album song played
+  void albumSongPlayed(String albumId) {
+    emit(AlbumSongPlay(albumId: albumId));
+  }
+
+  /// For Playlist song played
+  void playlistSongPlayed(String playlistId) {
+    emit(PlaylistSongPlay(playlistId: playlistId));
+  }
+
+  /// For reset State
+  void resetState() {
+    emit(AppResetState());
   }
 }

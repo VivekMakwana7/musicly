@@ -84,9 +84,12 @@ class ArtistDetailPage extends StatelessWidget {
 
                             if (artist?.topSongs != null && artist!.topSongs!.isNotEmpty) ...[
                               SizedBox(height: 30.h),
-                              DetailSongListingWidget(songs: artist.topSongs!,onTap: (index) {
-                                Injector.instance<AppCubit>().artistSongPlayed(artist.id);
-                              },),
+                              DetailSongListingWidget(
+                                songs: artist.topSongs!,
+                                onTap: (index) {
+                                  Injector.instance<AppCubit>().artistSongPlayed(artistId);
+                                },
+                              ),
                             ],
 
                             if (artist?.topAlbums != null && artist!.topAlbums!.isNotEmpty) ...[

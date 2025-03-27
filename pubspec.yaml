@@ -26,6 +26,7 @@ dependencies:
   hive_ce_flutter: ^2.2.0
   json_annotation: ^4.9.0
   logger: ^2.5.0
+  lottie: ^3.3.1
   pkg_dio:
     path: pkg_dio
   rxdart: ^0.28.0
@@ -60,11 +61,12 @@ flutter:
   assets:
       [
         "assets/icons/",
+        "assets/json/"
       ]
 
 flutter_gen:
   {
     line_length: 120,
-    integrations: { flutter_svg: true },
+    integrations: { flutter_svg: true, lottie: true },
     fonts: { enabled: true, outputs: { class_name: FontFamily }, },
   }

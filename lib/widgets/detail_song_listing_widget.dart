@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
@@ -6,13 +7,14 @@ import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/core/theme/theme.dart';
+import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// For display Detail page's song listing
 class DetailSongListingWidget extends StatelessWidget {
   /// Detail Song Listing Widget constructor
-  const DetailSongListingWidget({required this.songs, super.key,this.onTap});
+  const DetailSongListingWidget({required this.songs, super.key, this.onTap});
 
   /// For display Skeletonized widget
   factory DetailSongListingWidget.loading() => const DetailSongListingWidget(songs: []);
@@ -43,63 +45,70 @@ class DetailSongListingWidget extends StatelessWidget {
               child: Text('Songs', style: context.textTheme.titleSmall?.copyWith(fontWeight: semiBoldFontWeight)),
             ),
             SizedBox(height: 12.h),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final image = isLoading ? imageUrl : songs[index].image?.last.url ?? '';
-                final title = isLoading ? 'Song title' : songs[index].name ?? '';
-                final description =
-                    isLoading
-                        ? 'Song description'
-                        : '${songs[index].label} | ${songs[index].artists?.primary?.first.name ?? ''}';
-                return GestureDetector(
-                  onTap: () {
-                    if (!isLoading) {
-                      Injector.instance<AudioCubit>().setLocalSource(song: songs[index], source: songs);
-                      onTap?.call(index);
-                    }
+            BlocSelector<AudioCubit, AudioState, String?>(
+              selector: (state) => state.song?.id,
+              builder: (context, songId) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final image = isLoading ? imageUrl : songs[index].image?.last.url ?? '';
+                    final title = isLoading ? 'Song title' : songs[index].name ?? '';
+                    final description =
+                        isLoading
+                            ? 'Song description'
+                            : '${songs[index].label} | ${songs[index].artists?.primary?.first.name ?? ''}';
+                    final isPlaying = !isLoading && songs[index].id == songId;
+                    return GestureDetector(
+                      onTap: () {
+                        if (!isLoading) {
+                          Injector.instance<AudioCubit>().setLocalSource(song: songs[index], source: songs);
+                          onTap?.call(index);
+                        }
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: Skeletonizer(
+                        enabled: isLoading,
+                        child: Row(
+                          spacing: 12.w,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12.r),
+                              child: NetworkImageWidget(url: image, height: 52.h, width: 52.h),
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 4.h,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.textTheme.bodyMedium,
+                                    ),
+                                  ),
+                                  Text(
+                                    description,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isPlaying) Assets.json.songPlay.lottie(height: 26.h, width: 26.h),
+                          ],
+                        ),
+                      ),
+                    );
                   },
-                  behavior: HitTestBehavior.opaque,
-                  child: Skeletonizer(
-                    enabled: isLoading,
-                    child: Row(
-                      spacing: 12.w,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12.r),
-                          child: NetworkImageWidget(url: image, height: 52.h, width: 52.h),
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 4.h,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: context.textTheme.bodyMedium,
-                                ),
-                              ),
-                              Text(
-                                description,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  separatorBuilder: (context, index) => SizedBox(height: 10.h),
+                  itemCount: isLoading ? 5 : songs.length,
                 );
               },
-              separatorBuilder: (context, index) => SizedBox(height: 10.h),
-              itemCount: isLoading ? 5 : songs.length,
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
+import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
@@ -72,6 +73,7 @@ class SongSearchWidget extends StatelessWidget {
                       query: query ?? '',
                       songId: song.id,
                     );
+                    Injector.instance<AppCubit>().resetState();
                   },
                 );
               },

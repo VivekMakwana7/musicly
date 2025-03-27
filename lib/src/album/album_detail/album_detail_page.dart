@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/constants.dart';
+import 'package:musicly/core/cubits/app/app_cubit.dart';
+import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/src/album/album_detail/cubit/album_detail_cubit.dart';
@@ -66,7 +68,12 @@ class AlbumDetailPage extends StatelessWidget {
                             ],
                             SizedBox(height: 30.h),
                             if (state.album?.songs != null && state.album!.songs!.isNotEmpty) ...[
-                              DetailSongListingWidget(songs: state.album!.songs!),
+                              DetailSongListingWidget(
+                                songs: state.album!.songs!,
+                                onTap: (index) {
+                                  Injector.instance<AppCubit>().albumSongPlayed(albumId);
+                                },
+                              ),
                               SizedBox(height: 30.h),
                             ],
                             if (state.album?.artists?.primary != null && state.album!.artists!.primary!.isNotEmpty)

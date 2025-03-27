@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/di/injector.dart';
@@ -39,6 +40,7 @@ class RecentPlayedSongWidget extends StatelessWidget {
                 songImageURL: song.image?.last.url ?? '',
                 onTap: () {
                   if (song.downloadUrl?.last.url != null) {
+                    Injector.instance<AppCubit>().resetState();
                     Injector.instance<AudioCubit>().setLocalSource(song: song, source: recentPlayedSongs);
                   } else {
                     'Audio url not found'.showErrorAlert();
