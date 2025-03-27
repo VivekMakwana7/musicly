@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
+import 'package:musicly/core/cubits/audio/audio_cubit.dart';
+import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/gen/assets.gen.dart';
@@ -70,6 +72,11 @@ class PlaylistDetailPage extends StatelessWidget {
                                 songs: state.playlist!.songs!,
                                 onTap: (index) {
                                   Injector.instance<AppCubit>().playlistSongPlayed(playlistId);
+                                  Injector.instance<AudioCubit>().loadSourceData(
+                                    type: SourceType.searchPlaylist,
+                                    songId: state.playlist!.songs![index].id,
+                                    songs: state.playlist!.songs!,
+                                  );
                                 },
                               ),
                               SizedBox(height: 30.h),

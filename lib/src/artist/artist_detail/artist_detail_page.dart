@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
+import 'package:musicly/core/cubits/audio/audio_cubit.dart';
+import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/gen/assets.gen.dart';
@@ -90,6 +92,11 @@ class ArtistDetailPage extends StatelessWidget {
                                 songs: artist.topSongs!,
                                 onTap: (index) {
                                   Injector.instance<AppCubit>().artistSongPlayed(artistId);
+                                  Injector.instance<AudioCubit>().loadSourceData(
+                                    type: SourceType.searchArtist,
+                                    songId: artist.topSongs![index].id,
+                                    songs: artist.topSongs!,
+                                  );
                                 },
                                 onViewAllTap:
                                     artist.topSongs!.length >= 10
