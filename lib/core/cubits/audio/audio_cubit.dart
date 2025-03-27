@@ -102,7 +102,8 @@ class AudioCubit extends Cubit<AudioState> {
       PlayerState.completed => _handlePlaybackComplete(),
       PlayerState.disposed => AudioPlayState.idle,
     };
-    emit(state.copyWith(playState: playState));
+
+    emit(state.copyWith(playState: playState, song: playState == AudioPlayState.idle ? null : state.song));
   }
 
   AudioPlayState _handlePlaybackComplete() {
@@ -128,7 +129,6 @@ class AudioCubit extends Cubit<AudioState> {
     } else {
       'User played all song'.logD;
       _audioPlayer.stop();
-      emit(state.copyWith(playState: AudioPlayState.idle));
     }
   }
 
