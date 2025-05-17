@@ -41,6 +41,7 @@ class SearchPlaylistPage extends StatelessWidget {
                       onTap: () {
                         context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
                       },
+                      action: const SizedBox.shrink(),
                     );
                   },
                   separatorBuilder: (context, index) => SizedBox(height: 16.h),

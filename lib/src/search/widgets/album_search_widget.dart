@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
+import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/album/db_album_model.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/routes/app_router.dart';
+import 'package:musicly/src/album/widgets/album_sheet_dialog_widget.dart';
 import 'package:musicly/src/search/model/album/global_album_model.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
 
@@ -72,6 +74,11 @@ class AlbumSearchWidget extends StatelessWidget {
                 onTap: () {
                   context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': album.id});
                 },
+                onMoreTap: () async {
+                  final resAlbum = await DatabaseHandler.getAlbumById(album.id);
+                  if (resAlbum == null) return;
+                  if (context.mounted) AlbumSheetDialogWidget.show(context, album: resAlbum);
+                },
               );
             },
             itemCount: globalAlbums!.length,
@@ -94,6 +101,9 @@ class AlbumSearchWidget extends StatelessWidget {
                 description: album.description ?? '',
                 onTap: () {
                   context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': album.id});
+                },
+                onMoreTap: () {
+                  AlbumSheetDialogWidget.show(context, album: album);
                 },
               );
             },

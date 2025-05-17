@@ -52,4 +52,13 @@ final class AppRoutes {
 
   /// The route path for the Artist song screen
   static const String artistSongPage = 'artist-song-page';
+
+  /// The route path for the Artist album screen
+  static const String artistAlbumPage = 'artist-album-page';
+
+  /// The route path for the Setting screen
+  static const String settingPage = 'setting-page';
+
+  /// The route path for the Download screen
+  static const String downloadPage ='download-page';
 }

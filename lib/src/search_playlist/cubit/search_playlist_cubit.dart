@@ -7,7 +7,7 @@ import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/paginated/paginated_cubit.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 import 'package:musicly/src/search_playlist/search_playlist_page.dart';
 
 part 'search_playlist_state.dart';
@@ -20,8 +20,7 @@ class SearchPlaylistCubit extends PaginatedCubit<SearchPlaylistState> {
   /// For API call
   final String? query;
 
-  final _appDb = Injector.instance<AppDB>();
-  final _searchRepo = Injector.instance<SearchRepository>();
+  final _searchRepo = Injector.instance<MusicRepo>();
 
   @override
   ApiState get apiState => state.apiState;
@@ -46,7 +45,7 @@ class SearchPlaylistCubit extends PaginatedCubit<SearchPlaylistState> {
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, playlists: _appDb.playlistSearchHistory));
+      emit(state.copyWith(apiState: ApiState.success, playlists: AppDB.searchManager.searchedPlaylists));
     }
   }
 }

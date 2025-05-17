@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
+import 'package:musicly/core/theme/theme.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 
 /// Queue Sheet Widget
@@ -17,13 +19,7 @@ class QueueSheetWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       child: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF353A40), Color(0xFF101010), Color(0xFF121212)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        decoration: sheetDecoration,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
           child: Column(
@@ -44,7 +40,7 @@ class QueueSheetWidget extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            song?.name ?? '',
+                            (song?.name ?? '').formatSongTitle,
                             maxLines: (song?.label ?? '').isNotEmpty ? 1 : 2,
                             overflow: TextOverflow.ellipsis,
                             style: context.textTheme.bodyMedium,

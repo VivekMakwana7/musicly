@@ -63,7 +63,7 @@ types:
         index: 1
   DbSongModel:
     typeId: 5
-    nextIndex: 20
+    nextIndex: 21
     fields:
       id:
         index: 0
@@ -103,6 +103,8 @@ types:
         index: 17
       isLiked:
         index: 19
+      devicePath:
+        index: 20
   DbSongArtist:
     typeId: 6
     nextIndex: 3
@@ -157,7 +159,7 @@ types:
         index: 2
   DbAlbumModel:
     typeId: 10
-    nextIndex: 13
+    nextIndex: 14
     fields:
       id:
         index: 0
@@ -185,6 +187,8 @@ types:
         index: 11
       songs:
         index: 12
+      isLiked:
+        index: 13
   DbArtistModel:
     typeId: 11
     nextIndex: 21
@@ -243,7 +247,7 @@ types:
         index: 2
   DbPlaylistModel:
     typeId: 13
-    nextIndex: 13
+    nextIndex: 14
     fields:
       id:
         index: 0
@@ -271,6 +275,8 @@ types:
         index: 11
       songs:
         index: 12
+      isLiked:
+        index: 13
   DbSongPlaylistModel:
     typeId: 14
     nextIndex: 4

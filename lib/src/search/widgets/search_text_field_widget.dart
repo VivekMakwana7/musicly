@@ -38,16 +38,36 @@ class SearchTextFieldWidget extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF2F353A), Color(0xFF1C1F22)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF2C3036), Color(0xFF31343C)],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
                       ),
                       borderRadius: BorderRadius.circular(50.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                      boxShadow: [
+                        const BoxShadow(color: Color(0xFF262E32), blurRadius: 15, offset: Offset(-3, -3)),
+                        BoxShadow(
+                          color: const Color(0xFF101012).withValues(alpha: 0.75),
+                          blurRadius: 20,
+                          offset: const Offset(4, 4),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: const Center(child: Icon(Icons.cancel_outlined)),
+                      padding: const EdgeInsets.all(2),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF2F353A), Color(0xFF1C1F22)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(50.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 14.w),
+                          child: const Center(child: Icon(Icons.cancel_outlined)),
+                        ),
+                      ),
                     ),
                   ),
                 ),

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/album/cubit/search_album_cubit.dart';
+import 'package:musicly/src/album/widgets/album_sheet_dialog_widget.dart';
 import 'package:musicly/src/album/widgets/search_album_loading_widget.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
@@ -46,6 +48,11 @@ class SearchAlbumPage extends StatelessWidget {
                       title: album.name ?? '',
                       onTap: () {
                         context.pushNamed(AppRoutes.albumDetailPage, extra: {'albumId': album.id});
+                      },
+                      onMoreTap: () async {
+                        final resAlbum = await DatabaseHandler.getAlbumById(album.id);
+                        if (resAlbum == null) return;
+                        if (context.mounted) AlbumSheetDialogWidget.show(context, album: resAlbum);
                       },
                     );
                   },

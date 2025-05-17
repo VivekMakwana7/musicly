@@ -6,16 +6,24 @@ import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/theme/theme.dart';
 import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/routes/app_router.dart';
+import 'package:musicly/src/music/sheet/music_sheet_widget.dart';
 import 'package:musicly/widgets/network_image_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// For display Detail page's song listing
 class DetailSongListingWidget extends StatelessWidget {
   /// Detail Song Listing Widget constructor
-  const DetailSongListingWidget({required this.songs, super.key, this.onTap, this.onViewAllTap});
+  const DetailSongListingWidget({
+    required this.songs,
+    super.key,
+    this.onTap,
+    this.onViewAllTap,
+    this.hideAction = false,
+  });
 
   /// For display Skeletonized widget
   factory DetailSongListingWidget.loading() => const DetailSongListingWidget(songs: []);
@@ -29,14 +37,26 @@ class DetailSongListingWidget extends StatelessWidget {
   /// For handle View all tap
   final VoidCallback? onViewAllTap;
 
+  /// For hide action widget
+  final bool hideAction;
+
   @override
   Widget build(BuildContext context) {
     final isLoading = songs.isEmpty;
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFF282C30),
+        color: const Color(0xFF1C1F22),
         borderRadius: BorderRadius.circular(26.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: const Border(top: BorderSide(color: Color(0xFF424750), width: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF262E32).withValues(alpha: 0.7),
+            blurRadius: 20,
+            offset: const Offset(-3, -3),
+          ),
+          BoxShadow(color: const Color(0xFF101012).withValues(alpha: 0.75), blurRadius: 20, offset: const Offset(4, 4)),
+        ],
       ),
       child: Padding(
         padding: EdgeInsets.all(16.h),
@@ -77,6 +97,21 @@ class DetailSongListingWidget extends StatelessWidget {
                             ? 'Song description'
                             : '${songs[index].label} | ${songs[index].artists?.primary?.first.name ?? ''}';
                     final isPlaying = !isLoading && songs[index].id == songId;
+
+                    Widget imageWidget = NetworkImageWidget(url: image, height: 52.h, width: 52.h);
+                    if (isPlaying) {
+                      imageWidget = Stack(
+                        children: [
+                          imageWidget,
+                          Positioned.fill(
+                            child: ColoredBox(
+                              color: AppColors.primary.withValues(alpha: 0.8),
+                              child: Center(child: Assets.json.songPlay.lottie(height: 20.h, width: 20.h)),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
                     return GestureDetector(
                       onTap: () {
                         if (!isLoading) {
@@ -93,10 +128,7 @@ class DetailSongListingWidget extends StatelessWidget {
                         child: Row(
                           spacing: 12.w,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12.r),
-                              child: NetworkImageWidget(url: image, height: 52.h, width: 52.h),
-                            ),
+                            ClipRRect(borderRadius: BorderRadius.circular(12.r), child: imageWidget),
                             Expanded(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -105,7 +137,7 @@ class DetailSongListingWidget extends StatelessWidget {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      title,
+                                      title.formatSongTitle,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: context.textTheme.bodyMedium,
@@ -120,7 +152,20 @@ class DetailSongListingWidget extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            if (isPlaying) Assets.json.songPlay.lottie(height: 26.h, width: 26.h),
+                            if (!hideAction) ...[
+                              IconButton(
+                                icon: Assets.icons.icMore.svg(
+                                  colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                                ),
+                                onPressed: () {
+                                  MusicSheetWidget.show(context, song: songs[index]);
+                                },
+                                style: IconButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

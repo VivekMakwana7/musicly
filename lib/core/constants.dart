@@ -22,5 +22,5 @@ const int minPlaylistForViewAll = 3;
 /// Number of playlist will display in Search History
 const int minDbPlaylistCountForDisplay = 3;
 
-///
+/// Dummy image url for placeholder
 const String imageUrl = 'https://c.saavncdn.com/editorial/DoodhchPatti_20250311120650_500x500.jpg';

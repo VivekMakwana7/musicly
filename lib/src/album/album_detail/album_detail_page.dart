@@ -4,12 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/cubits/audio/source_handler.dart';
+import 'package:musicly/core/db/models/album/db_album_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
-import 'package:musicly/gen/assets.gen.dart';
+import 'package:musicly/core/source_handler/source_type.dart';
 import 'package:musicly/src/album/album_detail/cubit/album_detail_cubit.dart';
+import 'package:musicly/src/album/widgets/album_sheet_dialog_widget.dart';
 import 'package:musicly/widgets/app_back_button.dart';
+import 'package:musicly/widgets/app_more_button.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 import 'package:musicly/widgets/detail_artist_listing_widget.dart';
 import 'package:musicly/widgets/detail_description_widget.dart';
@@ -40,16 +42,18 @@ class AlbumDetailPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const AppBackButton(),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF2F353A), Color(0xFF1C1F22)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(50.r),
-                      ),
-                      child: SizedBox.square(dimension: 40.h, child: Center(child: Assets.icons.icMore.svg())),
+                    BlocSelector<AlbumDetailCubit, AlbumDetailState, DbAlbumModel?>(
+                      selector: (state) => state.album,
+                      builder: (context, album) {
+                        if (album == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return AppMoreButton(
+                          onTap: () {
+                            AlbumSheetDialogWidget.show(context, album: album);
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -78,6 +82,8 @@ class AlbumDetailPage extends StatelessWidget {
                                     type: SourceType.searchAlbum,
                                     songId: state.album!.songs![index].id,
                                     songs: state.album!.songs!,
+                                    page: 0,
+                                    isPaginated: false,
                                   );
                                 },
                               ),

@@ -34,4 +34,7 @@ final class EndPoints {
 
   /// Endpoint for get Artist Songs
   static String artistSongs(String id) => '/artists/$id/songs';
+
+  /// Endpoint for get Artist Albums
+  static String artistAlbums(String id) => '/artists/$id/albums';
 }

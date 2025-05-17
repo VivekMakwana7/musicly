@@ -23,6 +23,7 @@ sealed class DbAlbumModel extends HiveObject with _$DbAlbumModel {
     @JsonKey(name: 'artists') DbSongArtist? artists,
     @JsonKey(name: 'image') List<ImageModel>? image,
     @JsonKey(name: 'songs') List<DbSongModel>? songs,
+    @JsonKey(name: 'isLiked') @Default(false) bool isLiked,
   }) = _DbAlbumModel;
 
   DbAlbumModel._();

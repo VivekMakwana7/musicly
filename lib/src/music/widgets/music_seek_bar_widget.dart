@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/di/injector.dart';
+import 'package:musicly/core/theme/theme.dart';
 
 /// Music Seek Bar Widget
 class MusicSeekBarWidget extends StatelessWidget {
@@ -12,6 +13,7 @@ class MusicSeekBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = Injector.instance<AudioCubit>();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return BlocBuilder<AudioCubit, AudioState>(
@@ -32,19 +34,23 @@ class MusicSeekBarWidget extends StatelessWidget {
                       Positioned.fill(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: .3),
+                            color: Colors.white.withValues(alpha: .15),
                             borderRadius: BorderRadius.all(Radius.circular(6.r)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF000000).withValues(alpha: 0.15),
+                                blurRadius: 18,
+                                spreadRadius: 10,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(colors: [Color(0xFF016BB8), Color(0xFF11A8FD)]),
-                          borderRadius: BorderRadius.all(Radius.circular(6.r)),
-                        ),
+                        decoration: musicSeekBarDecoration,
                         child: SizedBox(
                           width:
-                              state.duration.inMilliseconds == 0
+                              state.positioned.inMilliseconds == 0
                                   ? 0
                                   : (constraints.maxWidth * state.positioned.inMilliseconds) /
                                       state.duration.inMilliseconds,

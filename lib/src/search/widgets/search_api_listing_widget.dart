@@ -22,6 +22,7 @@ class SearchApiListingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         children: [
           BlocSelector<SearchCubit, SearchState, List<GlobalTopTrendingModel>>(
             selector: (state) => state.searchModel?.topTrending ?? [],

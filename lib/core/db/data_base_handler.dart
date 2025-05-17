@@ -7,34 +7,26 @@ import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 
-/// For handle Database related operations
+/// Provides methods for handling database operations such as adding search history
+/// and managing liked songs.
 class DatabaseHandler {
-  /// Adds original details to the database based on the provided [id] and [type].
-  static void appendToDb({required String id, required String type}) {
-    switch (type) {
-      case 'artist':
-        _getArtistById(id);
-      case 'album':
-        _getAlbumById(id);
-      case 'playlist':
-        _getPlaylistById(id);
-      case _:
-        _getSongById(id);
-    }
-  }
+  static final _searchManager = AppDB.searchManager;
+  static final _likeManager = AppDB.likedManager;
+  static final _downloadManager = AppDB.downloadManager;
 
-  static Future<void> _getSongById(String songId) async {
-    final searchRepo = Injector.instance<SearchRepository>();
+  ///
+  static Future<DbSongModel?> getSongById(String songId) async {
+    final searchRepo = Injector.instance<MusicRepo>();
+    DbSongModel? song;
     'Searching song by id : $songId'.logD;
     final res = await searchRepo.searchSongById(ApiRequest(pathParameter: songId));
 
     res.when(
       success: (data) {
         if (data.isNotEmpty) {
-          'Song added to database : ${data.first.id}'.logD;
-          addToSongSearchHistory(data.first);
+          song = data.first;
         } else {
           'No data found '.logD;
         }
@@ -44,101 +36,59 @@ class DatabaseHandler {
         'Failed to add song to local database'.showErrorAlert();
       },
     );
+
+    return song;
   }
 
   /// Adds a song to the song search history in the database.
   static void addToSongSearchHistory(DbSongModel song) {
-    final appDb = Injector.instance<AppDB>();
     // Check if the song already exists in history
-    if (appDb.songSearchHistory.any((s) => s.id == song.id)) {
+    if (_searchManager.searchedSongs.any((s) => s.id == song.id)) {
       'Song with ID ${song.id} is already in the search history.'.logD;
       return;
     }
-    appDb.songSearchHistory = [song, ...appDb.songSearchHistory];
+    _searchManager.searchedSongs = [song, ..._searchManager.searchedSongs];
     'Song added to database : ${song.id}'.logD;
-  }
-
-  static Future<void> _getAlbumById(String albumId) async {
-    final searchRepo = Injector.instance<SearchRepository>();
-    'Searching Album by id : $albumId'.logD;
-    final res = await searchRepo.searchAlbumById(ApiRequest(params: {'id': albumId}));
-
-    res.when(
-      success: addToAlbumSearchHistory,
-      error: (exception) {
-        'Search album by Id API failed : $exception'.logE;
-        'Failed to add album to local database'.showErrorAlert();
-      },
-    );
   }
 
   /// Adds a album to the album search history in the database.
   static void addToAlbumSearchHistory(DbAlbumModel album) {
-    final appDb = Injector.instance<AppDB>();
     // Check if the album already exists in history
-    if (appDb.albumSearchHistory.any((s) => s.id == album.id)) {
+    if (_searchManager.searchedAlbums.any((s) => s.id == album.id)) {
       'Album with ID ${album.id} is already in the search history.'.logD;
       return;
     }
-    appDb.albumSearchHistory = [album, ...appDb.albumSearchHistory];
+    _searchManager.searchedAlbums = [album, ..._searchManager.searchedAlbums];
     'Album added to database : ${album.id}'.logD;
-  }
-
-  static Future<void> _getArtistById(String artistId) async {
-    final searchRepo = Injector.instance<SearchRepository>();
-    'Searching Artist by id : $artistId'.logD;
-    final res = await searchRepo.searchArtistById(ApiRequest(pathParameter: artistId));
-
-    res.when(
-      success: addToArtistSearchHistory,
-      error: (exception) {
-        'Search Artist by Id API failed : $exception'.logE;
-        'Failed to add artist to local database'.showErrorAlert();
-      },
-    );
   }
 
   /// Adds a artist to the artist search history in the database.
   static void addToArtistSearchHistory(DbArtistModel artist) {
-    final appDb = Injector.instance<AppDB>();
     // Check if the artist already exists in history
-    if (appDb.artistSearchHistory.any((s) => s.id == artist.id)) {
+    if (_searchManager.searchedArtists.any((s) => s.id == artist.id)) {
       'Artist with ID ${artist.id} is already in the search history.'.logD;
       return;
     }
-    appDb.artistSearchHistory = [artist, ...appDb.artistSearchHistory];
+    _searchManager.searchedArtists = [artist, ..._searchManager.searchedArtists];
     'Artist added to database : ${artist.id}'.logD;
-  }
-
-  static Future<void> _getPlaylistById(String playlistId) async {
-    final searchRepo = Injector.instance<SearchRepository>();
-    'Searching Playlist by id : $playlistId'.logD;
-    final res = await searchRepo.searchPlaylistById(ApiRequest(params: {'id': playlistId}));
-
-    res.when(
-      success: addToPlaylistSearchHistory,
-      error: (exception) {
-        'Search playlist by Id API failed : $exception'.logE;
-        'Failed to add playlist to local database'.showErrorAlert();
-      },
-    );
   }
 
   /// Adds a playlist to the playlist search history in the database.
   static void addToPlaylistSearchHistory(DbPlaylistModel playlist) {
-    final appDb = Injector.instance<AppDB>();
     // Check if the playlist already exists in history
-    if (appDb.playlistSearchHistory.any((s) => s.id == playlist.id)) {
+    if (_searchManager.searchedPlaylists.any((s) => s.id == playlist.id)) {
       'Playlist with ID ${playlist.id} is already in the search history.'.logD;
       return;
     }
-    appDb.playlistSearchHistory = [playlist, ...appDb.playlistSearchHistory];
+    _searchManager.searchedPlaylists = [playlist, ..._searchManager.searchedPlaylists];
     'Playlist added to database : ${playlist.id}'.logD;
   }
 
-  /// Handle Toggle liked Song
+  /// Toggles the like status of a song in the database.
+  /// [song] The song to toggle.
+  /// [showToast] Whether to show a success/failure toast message.
   static void toggleLikedSong(DbSongModel song, {bool showToast = false}) {
-    final list = Injector.instance<AppDB>().likedSongs.toList();
+    final list = _likeManager.likedSongs.toList();
     if (list.any((s) => s.id == song.id)) {
       list.removeWhere((element) => element.id == song.id);
       if (showToast) 'Song removed from liked songs'.showSuccessAlert();
@@ -147,12 +97,94 @@ class DatabaseHandler {
       if (showToast) 'Song added to liked songs'.showSuccessAlert();
     }
 
-    Injector.instance<AppDB>().likedSongs = list;
+    _likeManager.likedSongs = list;
   }
 
-  /// Check is song liked from local database
+  /// Checks if a song is liked in the local database.
   static bool isSongLiked(DbSongModel song) {
-    final list = Injector.instance<AppDB>().likedSongs;
+    final list = _likeManager.likedSongs;
     return list.any((s) => s.id == song.id);
+  }
+
+  /// Adds a song to the downloaded songs in the database.
+  static void addToDownloadedSongs(DbSongModel song) {
+    final list = _downloadManager.downloadedSongs.toList();
+    if (list.any((s) => s.id == song.id)) {
+      // Show Error Alert
+      'Song already downloaded'.showErrorAlert();
+      return;
+    } else {
+      list.insert(0, song);
+      'Song added to downloaded songs'.logD;
+    }
+    _downloadManager.downloadedSongs = list;
+  }
+
+  /// Checks if a song is downloaded in the local database.
+  static bool isDownloaded(DbSongModel song) {
+    final list = _downloadManager.downloadedSongs.toList();
+    return list.any((s) => s.id == song.id);
+  }
+
+  /// Toggles the like status of a album in the database.
+  static void toggleLikedAlbum(DbAlbumModel album) {
+    final list = _likeManager.likedAlbums.toList();
+    if (list.any((s) => s.id == album.id)) {
+      list.removeWhere((element) => element.id == album.id);
+      'Album removed from liked albums'.showSuccessAlert();
+    } else {
+      final uAlbum = album.copyWith(isLiked: true);
+      list.insert(0, uAlbum);
+      'Album added to liked albums'.showSuccessAlert();
+    }
+
+    _likeManager.likedAlbums = list;
+  }
+
+  ///
+  static Future<DbAlbumModel?> getAlbumById(String albumId) async {
+    final searchRepo = Injector.instance<MusicRepo>();
+    DbAlbumModel? album;
+    'Searching Album by id : $albumId'.logD;
+    final res = await searchRepo.searchAlbumById(ApiRequest(params: {'id': albumId}));
+
+    res.when(
+      success: (data) {
+        album = data;
+      },
+      error: (exception) {
+        'Search album by Id API failed : $exception'.logE;
+        'Failed to add album to local database'.showErrorAlert();
+      },
+    );
+
+    return album;
+  }
+
+  /// Checks if a Album is liked in the local database.
+  static bool isAlbumLiked(DbAlbumModel album) {
+    final list = _likeManager.likedAlbums;
+    return list.any((s) => s.id == album.id);
+  }
+
+  /// Checks if a playlist is liked in the local database.
+  static bool isPlaylistLiked(DbPlaylistModel playlist) {
+    final list = _likeManager.likedPlaylists;
+    return list.any((s) => s.id == playlist.id);
+  }
+
+  /// Toggles the like status of a playlist in the database.
+  static void toggleLikedPlaylist(DbPlaylistModel playlist) {
+    final list = _likeManager.likedPlaylists.toList();
+    if (list.any((s) => s.id == playlist.id)) {
+      list.removeWhere((element) => element.id == playlist.id);
+      'Playlist removed from liked playlists'.showSuccessAlert();
+    } else {
+      final uPlaylist = playlist.copyWith(isLiked: true);
+      list.insert(0, uPlaylist);
+      'Playlist added to liked playlists'.showSuccessAlert();
+    }
+
+    _likeManager.likedPlaylists = list;
   }
 }

@@ -7,7 +7,7 @@ import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 import 'package:musicly/src/artist/artist_detail/artist_detail_page.dart';
 
 part 'artist_detail_state.dart';
@@ -22,7 +22,7 @@ class ArtistDetailCubit extends Cubit<ArtistDetailState> {
   /// For get Artist details
   final String artistId;
 
-  final _searchRepo = Injector.instance<SearchRepository>();
+  final _searchRepo = Injector.instance<MusicRepo>();
 
   Future<void> _getArtistDetail() async {
     emit(state.copyWith(apiState: ApiState.loading));

@@ -4,16 +4,16 @@ import 'package:flutter/material.dart' show FocusManager, immutable;
 import 'package:pkg_dio/pkg_dio.dart';
 import 'package:pkg_dio/src/dio_manager/logger.dart';
 
-/// generic json mapper
+/// Generic JSON mapper for a single object.
 typedef JsonMapper<T> = T Function(Map<String, dynamic>);
 
-/// generic list json mapper
+/// Generic JSON mapper for a list of objects.
 typedef ListJsonMapper<T> = T Function(List<dynamic>);
 
-/// Request model for APIs
+/// Represents a request to be made using the Dio HTTP client.
 @immutable
 class DioRequest<T> {
-  /// DIO Request
+  /// Creates a [DioRequest].
   const DioRequest({
     required this.dio,
     required this.path,
@@ -28,59 +28,60 @@ class DioRequest<T> {
     this.hideKeyboard = true,
     this.pathParameter,
   })  : assert(jsonMapper != null || listJsonMapper != null, 'Provide at least one json mapper!'),
-        assert(jsonMapper == null || listJsonMapper == null, 'Can not provide both json mapper!');
+        assert(jsonMapper == null || listJsonMapper == null, 'Cannot provide both jsonMapper and listJsonMapper!');
 
-  /// Dio instance
+  /// The [Dio] instance used to make the request.
   final Dio dio;
 
-  /// endpoint
+  /// The endpoint path for the request.
   final String path;
 
-  /// body data
+  /// The request body data.
   final Object? data;
 
-  /// parameters
+  /// The query parameters for the request.
   final Map<String, dynamic>? params;
 
-  /// Dio options
+  /// Additional [Options] for the request.
   final Options? options;
 
-  /// cancel token
+  /// The [CancelToken] to cancel the request.
   final CancelToken? cancelToken;
 
-  /// receive progress callback
+  /// Callback for receiving progress updates.
   final ProgressCallback? receiveProgress;
 
-  /// Send progress callback
+  /// Callback for sending progress updates.
   final ProgressCallback? sendProgress;
 
-  /// Use this for if response is JsonObject
+  /// Mapper function to parse a JSON object.
   final JsonMapper<T>? jsonMapper;
 
-  /// Use this for if response is JsonArray
+  /// Mapper function to parse a JSON array.
   final ListJsonMapper<T>? listJsonMapper;
 
-  /// close keyboard
+  /// Whether to hide the keyboard before making the request.
   final bool hideKeyboard;
 
-  /// For Append path Param to URL
+  /// An optional parameter to append to the URL path.
   final String? pathParameter;
 
-  /// GET method
+  /// Makes a GET request.
   Future<ApiResult<T>> get() => _requestCall('GET');
 
-  /// POST method
+  /// Makes a POST request.
   Future<ApiResult<T>> post() => _requestCall('POST');
 
-  /// PUT method
+  /// Makes a PUT request.
   Future<ApiResult<T>> put() => _requestCall('PUT');
 
-  /// PATCH method
+  /// Makes a PATCH request.
   Future<ApiResult<T>> patch() => _requestCall('PATCH');
 
-  /// DELETE method
+  /// Makes a DELETE request.
   Future<ApiResult<T>> delete() => _requestCall('DELETE');
 
+  /// Core method to make the network request.
   Future<ApiResult<T>> _requestCall(String method) async {
     if (hideKeyboard) FocusManager.instance.primaryFocus?.unfocus();
     try {
@@ -112,6 +113,7 @@ class DioRequest<T> {
     }
   }
 
+  /// Handles the API response, mapping it to a result.
   Future<ApiResult<T>> _responseHandler(Response<dynamic> response) async {
     if (response.data != null) {
       final apiResponse = ApiResponse.fromJson(response.data as Map<String, dynamic>);

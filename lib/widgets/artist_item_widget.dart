@@ -27,14 +27,43 @@ class ArtistItemWidget extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: const Color(0xFF282C30),
+          color: const Color(0xFF1C1F22),
           borderRadius: BorderRadius.circular(26.r),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: const Border(top: BorderSide(color: Color(0xFF424750), width: 0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF262E32).withValues(alpha: 0.7),
+              blurRadius: 20,
+              offset: const Offset(-3, -3),
+            ),
+            BoxShadow(
+              color: const Color(0xFF101012).withValues(alpha: 0.75),
+              blurRadius: 20,
+              offset: const Offset(4, 4),
+            ),
+          ],
         ),
         child: Row(
           spacing: 12.w,
           children: [
-            ClipOval(child: NetworkImageWidget(url: artistImageURL)),
+            DecoratedBox(
+              decoration: ShapeDecoration(
+                shape: const CircleBorder(side: BorderSide(color: Color(0xFF424750), width: 0.5)),
+                shadows: [
+                  BoxShadow(
+                    color: const Color(0xFF262E32).withValues(alpha: 0.7),
+                    blurRadius: 20,
+                    offset: const Offset(-3, -3),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFF101012).withValues(alpha: 0.8),
+                    blurRadius: 20,
+                    offset: const Offset(4, 4),
+                  ),
+                ],
+              ),
+              child: ClipOval(child: SizedBox.square(dimension: 54.h, child: NetworkImageWidget(url: artistImageURL))),
+            ),
             Expanded(
               child: Text(
                 artistName,

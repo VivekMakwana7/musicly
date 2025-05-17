@@ -5,7 +5,7 @@ import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 import 'package:musicly/src/search/model/global_search_model.dart';
 import 'package:pkg_dio/pkg_dio.dart';
 import 'package:rxdart/rxdart.dart';
@@ -21,13 +21,13 @@ class SearchCubit extends Cubit<SearchState> {
 
   /// Search controller
   final searchController = TextEditingController();
-  final _searchRepo = Injector.instance<SearchRepository>();
+  final _searchRepo = Injector.instance<MusicRepo>();
   CancelToken? _cancelToken;
 
   late final PublishSubject<String> _searchTextQuery = PublishSubject();
 
-  /// Local database Instance
-  final appDb = Injector.instance<AppDB>();
+  ///
+  final isSearchedDataEmpty = ValueNotifier(AppDB.searchManager.isSearchedEmpty);
 
   /// Global Search
   Future<void> globalSearch() async {
@@ -59,6 +59,7 @@ class SearchCubit extends Cubit<SearchState> {
       ..dispose();
     _searchTextQuery.close();
     _cancelToken?.cancel();
+    isSearchedDataEmpty.dispose();
     return super.close();
   }
 
@@ -68,6 +69,7 @@ class SearchCubit extends Cubit<SearchState> {
       globalSearch();
     });
     searchController.addListener(_searchControllerListener);
+    _searchPageDatabaseListener();
   }
 
   void _searchControllerListener() {
@@ -77,5 +79,20 @@ class SearchCubit extends Cubit<SearchState> {
   /// For handle Clear API Search and Clear field
   void onClearFieldTap() {
     searchController.clear();
+  }
+
+  void _searchPageDatabaseListener() {
+    AppDB.searchManager.searchedSongStream().listen((event) {
+      isSearchedDataEmpty.value = AppDB.searchManager.isSearchedEmpty;
+    });
+    AppDB.searchManager.searchedAlbumStream().listen((event) {
+      isSearchedDataEmpty.value = AppDB.searchManager.isSearchedEmpty;
+    });
+    AppDB.searchManager.searchedArtistStream().listen((event) {
+      isSearchedDataEmpty.value = AppDB.searchManager.isSearchedEmpty;
+    });
+    AppDB.searchManager.searchedPlaylistStream().listen((event) {
+      isSearchedDataEmpty.value = AppDB.searchManager.isSearchedEmpty;
+    });
   }
 }

@@ -36,7 +36,19 @@ class DetailLanguageListingWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF282C30),
                   borderRadius: BorderRadius.circular(26.r),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                  border: const Border(top: BorderSide(color: Color(0xFF424750), width: 0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF262E32).withValues(alpha: 0.7),
+                      blurRadius: 20,
+                      offset: const Offset(-3, -3),
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFF101012).withValues(alpha: 0.75),
+                      blurRadius: 20,
+                      offset: const Offset(4, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),

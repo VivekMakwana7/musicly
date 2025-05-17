@@ -9,7 +9,7 @@ final class AudioState {
     this.song,
     this.positioned = Duration.zero,
     this.duration = Duration.zero,
-    this.isRepeat = false,
+    this.loopMode = LoopMode.off,
     this.isShuffle = false,
     this.currentIndex = 1,
     this.isNextDisabled = false,
@@ -34,7 +34,7 @@ final class AudioState {
   final bool isShuffle;
 
   /// For is source is repeat or not
-  final bool isRepeat;
+  final LoopMode loopMode;
 
   /// For check Next Button Disabled or not
   final bool isNextDisabled;
@@ -49,9 +49,9 @@ final class AudioState {
     Duration? positioned,
     Duration? duration,
     bool? isShuffle,
-    bool? isRepeat,
     int? currentIndex,
     bool? isNextDisabled,
+    LoopMode? loopMode,
   }) {
     return AudioState(
       playState: playState ?? this.playState,
@@ -59,9 +59,9 @@ final class AudioState {
       positioned: positioned ?? this.positioned,
       duration: duration ?? this.duration,
       isShuffle: isShuffle ?? this.isShuffle,
-      isRepeat: isRepeat ?? this.isRepeat,
       currentIndex: currentIndex ?? this.currentIndex,
       isNextDisabled: isNextDisabled ?? this.isNextDisabled,
+      loopMode: loopMode ?? this.loopMode,
     );
   }
 }

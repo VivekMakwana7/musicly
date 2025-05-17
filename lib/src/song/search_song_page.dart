@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/api_state.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
+import 'package:musicly/core/source_handler/source_type.dart';
 import 'package:musicly/src/song/cubit/search_song_cubit.dart';
 import 'package:musicly/src/song/widgets/search_song_loading_widget.dart';
 import 'package:musicly/widgets/bottom_nav/audio_widget.dart';
 import 'package:musicly/widgets/song_item_widget.dart';
+import 'package:musicly/widgets/song_play_more_widget.dart';
 
 /// Search Song Page
 class SearchSongPage extends StatelessWidget {
@@ -42,7 +44,8 @@ class SearchSongPage extends StatelessWidget {
                         return SongItemWidget(
                           description: song.label ?? '',
                           songImageURL: song.image?.last.url ?? '',
-                          title: song.name ?? '',
+                          title: (song.name ?? '').formatSongTitle,
+                          action: SongPlayMoreWidget.song(song: song),
                           isPlaying: songId == song.id,
                           onTap: () {
                             Injector.instance<AppCubit>().resetState();
@@ -52,7 +55,7 @@ class SearchSongPage extends StatelessWidget {
                               page: context.read<SearchSongCubit>().page,
                               type: SourceType.search,
                               songs: state.songs,
-                              isPaginated: true,
+                              isPaginated: false,
                             );
                           },
                         );

@@ -8,6 +8,7 @@ import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/audio_play_state.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/core/extensions/ext_string.dart';
+import 'package:musicly/core/theme/theme.dart';
 import 'package:musicly/gen/assets.gen.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/music/widgets/music_seek_bar_widget.dart';
@@ -36,15 +37,7 @@ class AudioWidget extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.all(8),
           child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF2C3036), Color(0xFF31343C)],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-              ),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-            ),
+            decoration: audioWidgetDecoration,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,7 +81,7 @@ class AudioWidget extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  state.song?.name ?? '',
+                                  (state.song?.name ?? '').formatSongTitle,
                                   maxLines: (state.song?.label ?? '').isNotEmpty ? 1 : 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: context.textTheme.bodyMedium,

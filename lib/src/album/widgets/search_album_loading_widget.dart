@@ -6,12 +6,15 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// Search Album Loading Widget
 class SearchAlbumLoadingWidget extends StatelessWidget {
   /// Search Album Loading Widget constructor
-  const SearchAlbumLoadingWidget({super.key});
+  const SearchAlbumLoadingWidget({super.key, this.needPadding = true});
+
+  ///
+  final bool needPadding;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: needPadding ? 16.w : 0, vertical: 20.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         mainAxisSpacing: 12.h,

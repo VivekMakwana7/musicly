@@ -13,7 +13,7 @@ class MusicNextIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<AudioCubit>();
     return BlocSelector<AudioCubit, AudioState, bool>(
-      selector: (state) => state.currentIndex != 0,
+      selector: (state) => state.isNextDisabled,
       builder: (context, isDisabled) {
         return MusicIcon.medium(
           icon: AnimatedSwitcher(

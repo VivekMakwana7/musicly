@@ -16,14 +16,14 @@ class SearchPage extends StatelessWidget {
       create: (context) => SearchCubit(),
       child: Scaffold(
         appBar: AppBar(title: const Text('Search')),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            spacing: 20.h,
-            children: const [SearchTextFieldWidget(), SearchListingWidget()],
-          ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 20.h,
+          children: [
+            Padding(padding: EdgeInsets.symmetric(horizontal: 16.w), child: const SearchTextFieldWidget()),
+            const SearchListingWidget(),
+          ],
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart' show HiveObject;
+import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/models/download_url/db_download_url.dart';
 import 'package:musicly/core/db/models/image/image_model.dart';
 
@@ -29,6 +30,7 @@ sealed class DbSongModel extends HiveObject with _$DbSongModel {
     @JsonKey(name: 'artists') DbSongArtist? artists,
     @JsonKey(name: 'image') List<ImageModel>? image,
     @JsonKey(name: 'downloadUrl') List<DbDownloadUrl>? downloadUrl,
+    @JsonKey(name: 'device_path') String? devicePath,
     @Default(false) bool isLiked,
   }) = _DbSongModel;
 
@@ -40,6 +42,20 @@ sealed class DbSongModel extends HiveObject with _$DbSongModel {
   /// Get list of [DbSongModel] from json
   static List<DbSongModel> fromJsonList(List<dynamic> json) =>
       json.map((e) => DbSongModel.fromJson(e as Map<String, dynamic>)).toList();
+
+  /// For get Audio URL
+  String? get audioUrl =>
+      devicePath ??
+      (downloadUrl != null && downloadUrl!.isNotEmpty
+          ? downloadUrl!.firstWhere((e) => e.quality == AppDB.settingManager.songQuality).url
+          : null);
+
+  /// For download Song with given quality
+  String? downloadURL(String quality) {
+    return downloadUrl != null && downloadUrl!.isNotEmpty
+        ? downloadUrl!.firstWhere((e) => e.quality == quality).url
+        : null;
+  }
 }
 
 /// [DbSongArtist] for Current Song's Artist details

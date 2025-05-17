@@ -7,7 +7,7 @@ import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/paginated/paginated_cubit.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 import 'package:musicly/src/album/search_album_page.dart';
 
 part 'search_album_state.dart';
@@ -20,11 +20,14 @@ class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
   /// For search albums
   final String? query;
 
-  final _appDb = Injector.instance<AppDB>();
-  final _searchRepo = Injector.instance<SearchRepository>();
+  final _searchManager = AppDB.searchManager;
+  final _searchRepo = Injector.instance<MusicRepo>();
 
   @override
   ApiState get apiState => state.apiState;
+
+  @override
+  int get limit => 12;
 
   @override
   Future<void> getData() async {
@@ -36,6 +39,7 @@ class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
         success: (data) {
           hasMoreData = data.results?.isNotEmpty ?? false;
           emit(state.copyWith(apiState: ApiState.success, albums: [...state.albums, ...?data.results]));
+          'param : ${state.albums.length}'.logD;
         },
         error: (exception) {
           'Search Album By Query API failed : $exception'.logE;
@@ -44,7 +48,7 @@ class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, albums: _appDb.albumSearchHistory));
+      emit(state.copyWith(apiState: ApiState.success, albums: _searchManager.searchedAlbums));
     }
   }
 }

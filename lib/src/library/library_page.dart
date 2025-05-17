@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/db/app_db.dart';
-import 'package:musicly/core/db/models/song/db_song_model.dart';
-import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/library/cubit/library_cubit.dart';
 import 'package:musicly/widgets/app_button.dart';
@@ -15,10 +13,7 @@ import 'package:musicly/widgets/detail_title_widget.dart';
 /// Library Page
 class LibraryPage extends StatelessWidget {
   /// Library Page Constructor
-  const LibraryPage({super.key, this.song});
-
-  /// For add Song in Playlist
-  final DbSongModel? song;
+  const LibraryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +48,7 @@ class LibraryPage extends StatelessWidget {
                     child: StreamBuilder(
                       stream: cubit.playlistStream,
                       builder: (context, _) {
-                        final list = Injector.instance<AppDB>().songPlaylist;
+                        final list = AppDB.playlistManager.songPlaylist;
                         return ListView.separated(
                           itemBuilder: (context, index) {
                             final playlist = list[index];

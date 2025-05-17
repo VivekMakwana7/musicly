@@ -10,6 +10,7 @@ import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/hive/hive_registrar.g.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/logger.dart';
+import 'package:musicly/core/service/audio_handler.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Bootstrap function that initializes and runs the Flutter application
@@ -22,6 +23,9 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
         WidgetsFlutterBinding.ensureInitialized();
         await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
         await _initialization();
+
+        audioPlayer = await initAudioService();
+
         runApp(await builder());
       },
       (error, stack) {
@@ -57,3 +61,6 @@ Future<Directory> _setupAppDirectories() async {
 
   return appDocDir;
 }
+
+/// Audio Player Handler for Handle Media Notifications
+MyAudioHandler? audioPlayer;

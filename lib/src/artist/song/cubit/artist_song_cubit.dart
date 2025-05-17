@@ -6,7 +6,7 @@ import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/paginated/paginated_cubit.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 import 'package:musicly/src/artist/song/artist_song_page.dart';
 
 part 'artist_song_state.dart';
@@ -19,7 +19,7 @@ class ArtistSongCubit extends PaginatedCubit<ArtistSongState> {
   /// For get Artist Song  list
   final String artistId;
 
-  final _searchRepo = Injector.instance<SearchRepository>();
+  final _searchRepo = Injector.instance<MusicRepo>();
 
   ///
   int _page = 0;

@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:musicly/core/db/models/song/db_song_model.dart';
+import 'package:musicly/core/enums/bottom_nav_menu.dart';
 import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/src/album/album_detail/album_detail_page.dart';
 import 'package:musicly/src/album/search_album_page.dart';
+import 'package:musicly/src/artist/album/artist_album_page.dart';
 import 'package:musicly/src/artist/artist_detail/artist_detail_page.dart';
 import 'package:musicly/src/artist/search_artist_page.dart';
 import 'package:musicly/src/artist/song/artist_song_page.dart';
-import 'package:musicly/src/home/home_page.dart';
 import 'package:musicly/src/library/library_detail/library_detail_page.dart';
-import 'package:musicly/src/library/library_page.dart';
-import 'package:musicly/src/liked/liked_page.dart';
 import 'package:musicly/src/music/music_page.dart';
-import 'package:musicly/src/search/search_page.dart';
 import 'package:musicly/src/search_playlist/playlist_detail/playlist_detail_page.dart';
 import 'package:musicly/src/search_playlist/search_playlist_page.dart';
+import 'package:musicly/src/setting/setting_page.dart';
 import 'package:musicly/src/song/search_song_page.dart';
 import 'package:musicly/widgets/bottom_nav/bottom_nav.dart';
 
@@ -37,7 +35,9 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(path: '/', pageBuilder: (context, state) => MaterialPage(key: state.pageKey, child: const Scaffold())),
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) => BottomNav(child: navigationShell),
+      builder: (context, state, navigationShell) {
+        return BottomNav(child: navigationShell);
+      },
       branches: _bottomNavBranches,
     ),
     GoRoute(
@@ -117,6 +117,21 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) {
         final artistId = (state.extra! as Map<String, dynamic>)['artistId'] as String;
         return MaterialPage(key: state.pageKey, child: ArtistSongPage(artistId: artistId));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.artistAlbumPage.navPath,
+      name: AppRoutes.artistAlbumPage,
+      pageBuilder: (context, state) {
+        final artistId = (state.extra! as Map<String, dynamic>)['artistId'] as String;
+        return MaterialPage(key: state.pageKey, child: ArtistAlbumPage(artistId: artistId));
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.settingPage.navPath,
+      name: AppRoutes.settingPage,
+      pageBuilder: (context, state) {
+        return MaterialPage(key: state.pageKey, child: const SettingPage());
       },
     ),
   ],

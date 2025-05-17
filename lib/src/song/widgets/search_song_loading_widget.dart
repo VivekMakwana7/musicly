@@ -6,18 +6,22 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// Search Song Loading Widget
 class SearchSongLoadingWidget extends StatelessWidget {
   /// Search Song Loading Widget constructor
-  const SearchSongLoadingWidget({super.key});
+  const SearchSongLoadingWidget({super.key, this.needPadding = true});
+
+  ///
+  final bool needPadding;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: needPadding ? 16.w : 0, vertical: 20.h),
       itemBuilder: (context, index) {
         return const Skeletonizer(
           child: SongItemWidget(
             description: 'song.description',
             songImageURL: 'https://c.saavncdn.com/editorial/DoodhchPatti_20250311120650_500x500.jpg',
             title: 'song.title',
+            action: SizedBox.shrink(),
           ),
         );
       },

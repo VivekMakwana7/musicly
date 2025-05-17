@@ -23,13 +23,7 @@ class App extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: DecoratedBox(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF353A40), Color(0xFF101010), Color(0xFF121212)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+          decoration: appDecoration,
           child: ScreenUtilInit(
             designSize: const Size(360, 800),
             minTextAdapt: true,
@@ -41,6 +35,7 @@ class App extends StatelessWidget {
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   themeMode: ThemeMode.dark,
+                  debugShowCheckedModeBanner: false,
                 ),
           ),
         ),

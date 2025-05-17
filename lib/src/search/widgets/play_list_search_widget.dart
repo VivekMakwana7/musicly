@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
+import 'package:musicly/core/cubits/audio/audio_cubit.dart';
 import 'package:musicly/core/db/models/playlist/db_playlist_model.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/routes/app_router.dart';
@@ -54,22 +56,28 @@ class PlayListSearchWidget extends StatelessWidget {
         ),
         if (globalPlaylists != null)
           Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final playlist = globalPlaylists![index];
-                return SongItemWidget(
-                  description: playlist.description ?? '',
-                  songImageURL: playlist.image?.last.url ?? '',
-                  title: playlist.title ?? '',
-                  onTap: () {
-                    context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
+            child: BlocSelector<AudioCubit, AudioState, String?>(
+              selector: (state) => state.song?.id,
+              builder: (context, songId) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final playlist = globalPlaylists![index];
+                    return SongItemWidget(
+                      description: playlist.description ?? '',
+                      songImageURL: playlist.image?.last.url ?? '',
+                      title: playlist.title ?? '',
+                      onTap: () {
+                        context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
+                      },
+                      action: const SizedBox.shrink(),
+                    );
                   },
+                  separatorBuilder: (context, index) => SizedBox(height: 16.h),
+                  itemCount: globalPlaylists!.length,
                 );
               },
-              separatorBuilder: (context, index) => SizedBox(height: 16.h),
-              itemCount: globalPlaylists!.length,
             ),
           ),
         if (dbPlayLists != null)
@@ -86,6 +94,7 @@ class PlayListSearchWidget extends StatelessWidget {
                   onTap: () {
                     context.pushNamed(AppRoutes.playlistDetailPage, extra: {'playlistId': playlist.id});
                   },
+                  action: const SizedBox.shrink(),
                 );
               },
               separatorBuilder: (context, index) => SizedBox(height: 16.h),

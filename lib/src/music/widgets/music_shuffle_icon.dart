@@ -13,28 +13,23 @@ class MusicShuffleIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<AudioCubit>();
     return BlocSelector<AudioCubit, AudioState, bool>(
-      selector: (state) => state.currentIndex == 0,
-      builder: (context, isDisabled) {
-        return BlocSelector<AudioCubit, AudioState, bool>(
-          selector: (state) => state.isShuffle,
-          builder: (context, isShuffle) {
-            return MusicIcon.small(
-              onTap: isDisabled ? null : cubit.toggleShuffleSong,
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 240),
-                transitionBuilder:
-                    (child, animation) =>
-                        ScaleTransition(scale: animation, child: FadeTransition(opacity: animation, child: child)),
-                child:
-                    !isDisabled && isShuffle
-                        ? Assets.icons.icShuffle.svg(
-                          key: ValueKey('song-shuffled-${cubit.state.song?.id}'),
-                          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                        )
-                        : Assets.icons.icShuffle.svg(key: ValueKey('song-unshuffled-${cubit.state.song?.id}')),
-              ),
-            );
-          },
+      selector: (state) => state.isShuffle,
+      builder: (context, isShuffle) {
+        return MusicIcon.small(
+          onTap: cubit.toggleShuffleSong,
+          icon: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 240),
+            transitionBuilder:
+                (child, animation) =>
+                    ScaleTransition(scale: animation, child: FadeTransition(opacity: animation, child: child)),
+            child:
+                isShuffle
+                    ? Assets.icons.icShuffle.svg(
+                      key: ValueKey('song-shuffled-${cubit.state.song?.id}'),
+                      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    )
+                    : Assets.icons.icShuffle.svg(key: ValueKey('song-unshuffled-${cubit.state.song?.id}')),
+          ),
         );
       },
     );

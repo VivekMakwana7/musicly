@@ -4,16 +4,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/search_item_type.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
+import 'package:musicly/core/source_handler/source_type.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/search/cubit/search_cubit.dart';
 import 'package:musicly/src/search/model/top_trending/global_top_trending_model.dart';
 import 'package:musicly/widgets/album_item_widget.dart';
 import 'package:musicly/widgets/artist_item_widget.dart';
 import 'package:musicly/widgets/song_item_widget.dart';
+import 'package:musicly/widgets/song_play_more_widget.dart';
 
 /// Top Trending Search Widget
 class TopTrendingSearchWidget extends StatelessWidget {
@@ -74,6 +75,7 @@ class TopTrendingSearchWidget extends StatelessWidget {
                       description: topTrending.description ?? '',
                       songImageURL: topTrending.image?.last.url ?? '',
                       title: topTrending.title ?? '',
+                      action: SongPlayMoreWidget.id(songId: topTrending.id),
                       isPlaying: songId == topTrending.id,
                       onTap: () {
                         Injector.instance<AppCubit>().resetState();
@@ -81,7 +83,8 @@ class TopTrendingSearchWidget extends StatelessWidget {
                           type: SourceType.search,
                           songId: topTrending.id,
                           query: context.read<SearchCubit>().searchController.text.trim(),
-                          isPaginated: true,
+                          page: 0,
+                          isPaginated: false,
                         );
                       },
                     ),

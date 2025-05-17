@@ -7,7 +7,7 @@ import 'package:musicly/core/enums/api_state.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
 import 'package:musicly/core/rest_utils/api_request.dart';
-import 'package:musicly/repos/search_repository.dart';
+import 'package:musicly/repos/music_repo.dart';
 import 'package:musicly/src/search_playlist/playlist_detail/playlist_detail_page.dart';
 
 part 'playlist_detail_state.dart';
@@ -22,7 +22,7 @@ class PlaylistDetailCubit extends Cubit<PlaylistDetailState> {
   /// For get playlist details
   final String playlistId;
 
-  final _searchRepo = Injector.instance<SearchRepository>();
+  final _searchRepo = Injector.instance<MusicRepo>();
 
   Future<void> _getPlaylistDetail() async {
     emit(state.copyWith(apiState: ApiState.loading));

@@ -5,14 +5,15 @@ import 'package:go_router/go_router.dart';
 import 'package:musicly/core/constants.dart';
 import 'package:musicly/core/cubits/app/app_cubit.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/cubits/audio/source_handler.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/extensions/ext_build_context.dart';
-import 'package:musicly/core/extensions/ext_string_alert.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
+import 'package:musicly/core/source_handler/source_type.dart';
 import 'package:musicly/routes/app_router.dart';
 import 'package:musicly/src/search/model/song/global_song_model.dart';
 import 'package:musicly/widgets/song_item_widget.dart';
+import 'package:musicly/widgets/song_play_more_widget.dart';
 
 /// Song Search Widget
 class SongSearchWidget extends StatelessWidget {
@@ -72,6 +73,7 @@ class SongSearchWidget extends StatelessWidget {
                       description: song.description ?? '',
                       songImageURL: song.image?.last.url ?? '',
                       title: song.title ?? '',
+                      action: SongPlayMoreWidget.id(songId: song.id),
                       isPlaying: songId == song.id,
                       onTap: () {
                         Injector.instance<AppCubit>().resetState();
@@ -79,7 +81,8 @@ class SongSearchWidget extends StatelessWidget {
                           type: SourceType.search,
                           songId: song.id,
                           query: query,
-                          isPaginated: true,
+                          page: 1,
+                          isPaginated: false,
                         );
                       },
                     );
@@ -92,26 +95,37 @@ class SongSearchWidget extends StatelessWidget {
           ),
         if (dbSongs != null)
           Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final song = dbSongs![index];
-                return SongItemWidget(
-                  description: song.label ?? '',
-                  songImageURL: song.image?.last.url ?? '',
-                  title: song.name ?? '',
-                  onTap: () {
-                    if (song.downloadUrl?.last.url != null) {
-                      // Injector.instance<AudioCubit>().setLocalSource(song: song, source: dbSongs!);
-                    } else {
-                      'Audio url not found'.showErrorAlert();
-                    }
+            child: BlocSelector<AudioCubit, AudioState, String?>(
+              selector: (state) => state.song?.id,
+              builder: (context, songId) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final song = dbSongs![index];
+                    return SongItemWidget(
+                      description: song.label ?? '',
+                      songImageURL: song.image?.last.url ?? '',
+                      title: (song.name ?? '').formatSongTitle,
+                      action: SongPlayMoreWidget.song(song: song),
+                      isPlaying: songId == song.id,
+                      onTap: () {
+                        Injector.instance<AppCubit>().resetState();
+                        Injector.instance<AudioCubit>().loadSourceData(
+                          type: SourceType.searchHistory,
+                          songId: song.id,
+                          query: '',
+                          page: 0,
+                          isPaginated: false,
+                          songs: dbSongs!,
+                        );
+                      },
+                    );
                   },
+                  separatorBuilder: (context, index) => SizedBox(height: 16.h),
+                  itemCount: dbSongs!.take(minDbSongCountForDisplay).length,
                 );
               },
-              separatorBuilder: (context, index) => SizedBox(height: 16.h),
-              itemCount: dbSongs!.take(minDbSongCountForDisplay).length,
             ),
           ),
       ],

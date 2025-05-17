@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:musicly/core/db/app_db.dart';
-import 'package:musicly/core/di/injector.dart';
-import 'package:musicly/core/extensions/ext_build_context.dart';
 import 'package:musicly/src/search/widgets/album_search_widget.dart';
 import 'package:musicly/src/search/widgets/artist_search_widget.dart';
 import 'package:musicly/src/search/widgets/play_list_search_widget.dart';
@@ -15,40 +13,24 @@ class SearchDataBaseListingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appDb = Injector.instance<AppDB>();
-
-    if (appDb.isHistoryEmpty) {
-      return Expanded(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Center(
-            child: Text(
-              'Search your favorite songs, artists, or albums',
-              style: context.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      );
-    }
-
     return Expanded(
       child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         children: [
-          if (appDb.songSearchHistory.isNotEmpty) ...[
-            SongSearchWidget.fromDatabase(appDb.songSearchHistory),
+          if (AppDB.searchManager.searchedSongs.isNotEmpty) ...[
+            SongSearchWidget.fromDatabase(AppDB.searchManager.searchedSongs),
             SizedBox(height: 20.h),
           ],
-          if (appDb.albumSearchHistory.isNotEmpty) ...[
-            AlbumSearchWidget.fromDatabase(appDb.albumSearchHistory),
+          if (AppDB.searchManager.searchedAlbums.isNotEmpty) ...[
+            AlbumSearchWidget.fromDatabase(AppDB.searchManager.searchedAlbums),
             SizedBox(height: 20.h),
           ],
-          if (appDb.artistSearchHistory.isNotEmpty) ...[
-            ArtistSearchWidget.fromDatabase(appDb.artistSearchHistory),
+          if (AppDB.searchManager.searchedArtists.isNotEmpty) ...[
+            ArtistSearchWidget.fromDatabase(AppDB.searchManager.searchedArtists),
             SizedBox(height: 20.h),
           ],
-          if (appDb.playlistSearchHistory.isNotEmpty) ...[
-            PlayListSearchWidget.fromDatabase(appDb.playlistSearchHistory),
+          if (AppDB.searchManager.searchedPlaylists.isNotEmpty) ...[
+            PlayListSearchWidget.fromDatabase(AppDB.searchManager.searchedPlaylists),
             SizedBox(height: 20.h),
           ],
         ],

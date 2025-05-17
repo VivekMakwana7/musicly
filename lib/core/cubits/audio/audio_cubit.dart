@@ -1,135 +1,122 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'dart:async';
+import 'dart:io';
+
+import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:musicly/core/cubits/audio/source_handler.dart';
+import 'package:flutter/services.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:musicly/bootstrap.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/data_base_handler.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 import 'package:musicly/core/di/injector.dart';
 import 'package:musicly/core/enums/audio_play_state.dart';
+import 'package:musicly/core/extensions/ext_string.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
 import 'package:musicly/core/logger.dart';
+import 'package:musicly/core/source_handler/source_handler.dart';
+import 'package:musicly/core/source_handler/source_type.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pkg_dio/pkg_dio.dart';
 
 part 'audio_state.dart';
 
 /// For Handle Audio Operation
-class AudioCubit extends Cubit<AudioState> {
+class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
   /// Default constructor
   AudioCubit() : super(const AudioState()) {
-    _initListeners();
+    _internetChecker();
+    WidgetsBinding.instance.addObserver(this);
   }
-
-  /// Instance of AudioPlayer
-  final AudioPlayer _audioPlayer = AudioPlayer();
 
   SourceData? _currentSource;
 
+  /// Connectivity Instance
+  final connection = Connectivity();
+
+  /// Its indicates has Internet
+  final hasInternet = ValueNotifier(true);
+  late final _homeManager = AppDB.homeManager;
+
+  /// Handles changes in the player state (playing/paused).
+  void handlePlayerStateChange(PlayerState playerState) {
+    if (_currentSource != null) {
+      emit(
+        state.copyWith(
+          playState:
+              playerState.playing
+                  ? AudioPlayState.play
+                  : playerState.processingState == ProcessingState.idle
+                  ? AudioPlayState.idle
+                  : AudioPlayState.pause,
+        ),
+      );
+    } else {
+      emit(state.copyWith(playState: AudioPlayState.idle));
+    }
+  }
+
+  /// Handles changes in the current audio position.
+  void handlePositionChange(Duration position) {
+    emit(state.copyWith(positioned: position));
+  }
+
+  /// Handles changes in the total duration of the audio.
+  void handleDurationChange(Duration? duration) {
+    emit(state.copyWith(duration: duration));
+  }
+
+  /// Handles changes in the shuffle mode.
+  void handleShuffleModeChange({bool isShuffle = false}) {
+    emit(state.copyWith(isShuffle: isShuffle));
+  }
+
   @override
   Future<void> close() {
-    _audioPlayer.dispose();
+    audioPlayer?.stop();
+    WidgetsBinding.instance.removeObserver(this);
     return super.close();
   }
 
   void _addToRecentPlayed(DbSongModel song) {
-    final recentPlayedSongs = Injector.instance<AppDB>().recentPlayedSong;
-    if (recentPlayedSongs.any((element) => element.id == song.id)) {
-      recentPlayedSongs.remove(song);
-    }
-    recentPlayedSongs.insert(0, song);
-    Injector.instance<AppDB>().recentPlayedSong = recentPlayedSongs.toSet().toList();
-  }
-
-  void _initListeners() {
-    _audioPlayer.onPlayerStateChanged.listen(_handlePlayerStateChange);
-    _audioPlayer.onDurationChanged.listen((d) => emit(state.copyWith(duration: d)));
-    _audioPlayer.onPositionChanged.listen((p) => emit(state.copyWith(positioned: p)));
-  }
-
-  void _handlePlayerStateChange(PlayerState playerState) {
-    final playState = switch (playerState) {
-      PlayerState.playing => AudioPlayState.play,
-      PlayerState.paused => AudioPlayState.pause,
-      PlayerState.stopped => AudioPlayState.idle,
-      PlayerState.completed => _handlePlaybackComplete(),
-      PlayerState.disposed => AudioPlayState.idle,
-    };
-
-    emit(state.copyWith(playState: playState, song: playState == AudioPlayState.idle ? null : state.song));
-  }
-
-  AudioPlayState _handlePlaybackComplete() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      playNextSong();
-    });
-    return AudioPlayState.idle;
-  }
-
-  Future<void> _playSong() async {
-    final song = state.song;
-    if (song == null || (song.downloadUrl?.isEmpty ?? true)) {
-      'Please select a valid song'.showErrorAlert();
-      emit(state.copyWith(playState: AudioPlayState.error));
-      return;
-    }
-
-    final url = song.downloadUrl!.last.url;
-    _checkLike();
-    'Playing: ${song.name} | ${song.id} | Duration: ${song.duration}'.logD;
-
-    try {
-      await _audioPlayer.setSourceUrl(url);
-      await _audioPlayer.play(_audioPlayer.source!);
-    } on Object catch (e) {
-      'Playback error: $e'.logE;
-      'Playback failed. Please try again'.showErrorAlert();
-      emit(state.copyWith(playState: AudioPlayState.error));
-    }
+    final recentPlayedSongs =
+        _homeManager.recentPlayedSongs
+          ..removeWhere((element) => element.id == song.id)
+          ..insert(0, song);
+    _homeManager.recentPlayedSongs = recentPlayedSongs.toSet().toList();
   }
 
   /// For toggle Play Pause
   Future<void> togglePlayPause() async {
     if (state.playState == AudioPlayState.play) {
-      await _audioPlayer.pause();
+      await Injector.instance<AudioPlayer>().pause();
     } else {
-      await _audioPlayer.resume();
+      await Injector.instance<AudioPlayer>().play();
     }
   }
 
   /// For seek to given positioned
   Future<void> seekToPosition(double positioned, double maxPositioned) async {
     final positionedInMilliSeconds = (positioned * state.duration.inMilliseconds) / maxPositioned;
-    await _audioPlayer.seek(Duration(milliseconds: positionedInMilliSeconds.toInt()));
+    await audioPlayer?.seek(Duration(milliseconds: positionedInMilliSeconds.toInt()));
   }
 
   /// Play Next Song
   Future<void> playNextSong() async {
-    await _audioPlayer.seek(Duration.zero);
     if (_currentSource != null) {
       await _loadMoreData();
-      final currentIndex = _currentSource!.songs.indexOf(state.song!);
-      if (currentIndex == _currentSource!.songs.length - 1 && state.isRepeat) {
-        _setSource(0);
-        return;
-      }
-      if (currentIndex < _currentSource!.songs.length - 1) {
-        final nextIndex = currentIndex + 1;
-        _setSource(nextIndex);
-      } else {
-        'User played all song'.logD;
-        await _audioPlayer.stop();
-      }
+      await audioPlayer?.skipToNext();
     } else {
       'Source not found'.logE;
     }
   }
 
   /// Play Previous Song
-  void playPreviousSong() {
+  Future<void> playPreviousSong() async {
     if (_currentSource != null) {
-      final index = _currentSource!.songs.indexOf(state.song!);
-      if (index > 0) {
-        _setSource(index - 1);
-      }
+      await audioPlayer?.skipToPrevious();
     } else {
       'Source not found'.logE;
     }
@@ -139,38 +126,33 @@ class AudioCubit extends Cubit<AudioState> {
   void toggleLikeSong({bool? isLiked}) {
     if (_currentSource != null) {
       final song = state.song?.copyWith(isLiked: isLiked ?? !(state.song?.isLiked ?? false));
-      final sourceList = _currentSource!.songs.toList();
-      sourceList[sourceList.indexOf(state.song!)] = song!;
       emit(state.copyWith(song: song));
-      if (isLiked == null) DatabaseHandler.toggleLikedSong(song);
+      if (isLiked == null) DatabaseHandler.toggleLikedSong(song!);
     } else {
       'Source not found'.logE;
     }
   }
 
   /// Toggle Repeat Song
-  void toggleRepeatSong() {
-    emit(state.copyWith(isRepeat: !state.isRepeat));
+  Future<void> toggleRepeatSong() async {
+    final mode = switch (state.loopMode) {
+      LoopMode.off => LoopMode.one,
+      LoopMode.one => LoopMode.all,
+      LoopMode.all => LoopMode.off,
+    };
+    emit(state.copyWith(loopMode: mode));
+
+    await Injector.instance<AudioPlayer>().setLoopMode(mode);
   }
 
   /// Toggle Shuffle Song
-  void toggleShuffleSong() {
-    // if (!state.isShuffle) {
-    //   final list =
-    //       state.songSources.toList()
-    //         ..removeWhere((element) => element.id == state.song?.id)
-    //         ..insert(0, state.song!)
-    //         ..shuffle();
-    //   emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
-    // } else {
-    //   final list = state.originSongSources.toList();
-    //   emit(state.copyWith(isShuffle: !state.isShuffle, songSources: list));
-    // }
+  Future<void> toggleShuffleSong() async {
+    await audioPlayer?.setShuffleMode(state.isShuffle ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none);
   }
 
   /// For check Like
-  void _checkLike() {
-    final isLiked = DatabaseHandler.isSongLiked(state.song!);
+  void _checkLike(DbSongModel song) {
+    final isLiked = DatabaseHandler.isSongLiked(song);
     toggleLikeSong(isLiked: isLiked);
   }
 
@@ -178,75 +160,222 @@ class AudioCubit extends Cubit<AudioState> {
   Future<void> loadSourceData({
     required SourceType type,
     required String songId,
+    required int page,
+    required bool isPaginated,
     String? query,
-    int page = 1,
     List<DbSongModel> songs = const [],
-    bool isPaginated = false,
+    String? albumId,
+    String? artistId,
+    String? playlistId,
   }) async {
+    _currentSource = null;
     emit(state.copyWith(playState: AudioPlayState.loading));
-
-    if (_currentSource != null && _currentSource!.sourceType == type) {
-      'Already have source and update song'.logD;
-      _currentSource = _currentSource!..copyWith(query: query, sourceType: type, songs: songs);
-      final songIndex = _currentSource!.songs.indexWhere((element) => element.id == songId);
-      _setSource(songIndex);
-      return;
-    }
-
     'Assigning new source and play song\nSource data : [$type]\nSong will play: $songId\nSearch Query: $query\nPage number : $page'
         .logD;
     if (songs.isNotEmpty) {
       'Load Sources : ${songs.map((e) => e.id).toList()}'.logD;
     }
-    final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == type);
+
     _currentSource =
         songs.isEmpty
-            ? await handler.getSourceData(query: query, page: page)
-            : SourceData(songs: songs, sourceType: type, isPaginated: isPaginated, currentPage: page, query: query);
+            ? await _getSourceData(
+              type,
+              page: page,
+              artistId: artistId,
+              query: query,
+              playlistId: playlistId,
+              albumId: albumId,
+              isPaginated: isPaginated,
+            )
+            : SourceData(
+              songs: songs,
+              sourceType: type,
+              currentPage: page,
+              query: query,
+              playlistId: playlistId,
+              artistId: artistId,
+              albumId: albumId,
+              isPaginated: isPaginated,
+            );
     if (_currentSource != null) {
       final songIndex = _currentSource!.songs.indexWhere((element) => element.id == songId);
-      _setSource(songIndex, isFromLoadSource: true);
+      'songIndex : $songIndex || ${_currentSource!.songs.map((e) => e.id).toList()}'.logD;
+
+      await _setSource(songIndex, isFromLoadSource: true);
     } else {
       'Source not found'.logE;
       'Source not found'.showErrorAlert();
     }
   }
 
-  void _setSource(int index, {bool isFromLoadSource = false}) {
+  /// Sets the audio source and starts playing the song at the given index.
+  Future<void> _setSource(int index, {bool isFromLoadSource = false}) async {
+    final songSource = _currentSource!.songs.map(_songToMediaItem).toList();
+    await audioPlayer?.initSongs(
+      songSource,
+      index: index,
+      isFromDownload: _currentSource!.sourceType == SourceType.downloaded,
+    );
     final song = _currentSource!.songs[index];
-    emit(state.copyWith(song: song, currentIndex: index, isNextDisabled: _checkNextButtonDisabledOrNot()));
-    _playSong();
-    _addToRecentPlayed(song);
     if (isFromLoadSource) _addSearchHistory(song);
   }
 
-  bool _checkNextButtonDisabledOrNot() {
-    if (_currentSource != null) {
-      if (_currentSource!.songs.length == 1) {
-        return true;
-      }
-      return state.currentIndex == _currentSource!.songs.length - 1 && !state.isRepeat;
-    }
-    return false;
-  }
-
+  /// Loads more data for paginated sources when nearing the end of the current playlist.
   Future<void> _loadMoreData() async {
     if (_currentSource != null &&
         _currentSource!.isPaginated &&
-        (_currentSource!.songs.length - state.currentIndex < 3)) {
-      final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == _currentSource!.sourceType);
-      final newData = await handler.getSourceData(page: _currentSource!.currentPage + 1, query: _currentSource!.query);
+        ((_currentSource!.songs.length - state.currentIndex) < 4)) {
+      final newData = await _getSourceData(
+        _currentSource!.sourceType,
+        albumId: _currentSource?.albumId,
+        playlistId: _currentSource?.playlistId,
+        query: _currentSource?.query,
+        artistId: _currentSource?.artistId,
+        page: _currentSource!.currentPage + 1,
+        isPaginated: _currentSource!.isPaginated,
+      );
       _currentSource = _currentSource!.copyWith(
         songs: [..._currentSource!.songs, ...newData.songs],
         currentPage: newData.currentPage,
         hasMoreData: newData.hasMoreData,
       );
+
+      if (newData.songs.isNotEmpty) {
+        await audioPlayer?.addQueueItems(
+          List.generate(newData.songs.length, (index) => _songToMediaItem(newData.songs[index])),
+        );
+      }
     }
   }
 
+  /// Adds the currently played song to the search history if the source is a search result.
   void _addSearchHistory(DbSongModel song) {
     if (_currentSource != null && _currentSource!.sourceType == SourceType.search) {
       DatabaseHandler.addToSongSearchHistory(song);
+    }
+  }
+
+  /// Initializes the state with the currently playing song's details.
+  void playingSongAtIndex(int index) {
+    if (_currentSource != null) {
+      final song = _currentSource!.songs[index];
+      emit(state.copyWith(song: song, currentIndex: index, isNextDisabled: !audioPlayer!.player.hasNext));
+      _checkLike(song);
+      if (_currentSource!.sourceType != SourceType.downloaded) _addToRecentPlayed(song);
+    }
+  }
+
+  /// Fetches source data based on the provided SourceType and parameters.
+  Future<SourceData> _getSourceData(
+    SourceType type, {
+    String? query,
+    String? albumId,
+    String? artistId,
+    String? playlistId,
+    int page = 1,
+    bool isPaginated = true,
+  }) {
+    final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == type);
+    return switch (type) {
+      SourceType.recentPlayed ||
+      SourceType.liked ||
+      SourceType.searchHistory ||
+      SourceType.playlist ||
+      SourceType.downloaded => handler.getDatabaseData(),
+      SourceType.search => handler.getSearchSongData(query: query ?? '', page: page),
+      SourceType.searchAlbum => handler.getAlbumSongData(albumId: albumId!, page: page),
+      SourceType.searchArtist => handler.getArtistSongData(artistId: artistId!, page: page),
+      SourceType.searchPlaylist => handler.getPlaylistSongData(playlistId: playlistId!),
+    };
+  }
+
+  /// Add song in queue
+  void addSongToQueue(DbSongModel song) {
+    audioPlayer?.addQueueItem(_songToMediaItem(song));
+    '${song.name?.formatSongTitle} added in queue'.showSuccessAlert();
+  }
+
+  MediaItem _songToMediaItem(DbSongModel song) {
+    return MediaItem(
+      id: song.audioUrl ?? '',
+      album: song.album?.name ?? '',
+      title: song.name ?? '',
+      artist: (song.artists?.primary ?? []).isNotEmpty ? song.artists?.primary?.first.name : '',
+      artUri: Uri.parse(song.image?.last.url ?? ''),
+      duration: Duration(seconds: song.duration ?? 50),
+    );
+  }
+
+  /// For download given song
+  Future<void> downloadSong({required DbSongModel song, required String quality, bool showToast = true}) async {
+    final dSong = song;
+    final appDir = await getApplicationDocumentsDirectory();
+    final appFolderPath = '${appDir.path}/Musicly';
+    final filePath = '$appFolderPath/${dSong.name?.formatSongTitle}.mp3';
+
+    final songFile = File(filePath);
+    if (songFile.existsSync()) {
+      'Already exist '.logD;
+      if (showToast) 'Song already downloaded'.showErrorAlert();
+      return;
+    }
+    final dio = Dio();
+
+    try {
+      final downloadUrl = dSong.downloadURL(quality) ?? '';
+
+      if (downloadUrl.isEmpty) {
+        'Error downloading song: URL can not be empty'.logE;
+        if (showToast) 'Song URL not found'.showErrorAlert();
+        return;
+      }
+
+      await dio.download(dSong.downloadURL(quality) ?? '', filePath);
+      final songFile = File(filePath);
+      if (songFile.existsSync()) {
+        DatabaseHandler.addToDownloadedSongs(dSong.copyWith(devicePath: filePath));
+
+        if (showToast) 'Song downloaded successfully'.showSuccessAlert();
+      } else {
+        if (showToast) 'Failed to download song'.showErrorAlert();
+      }
+    } on Object catch (e) {
+      'Error downloading song: $e'.logE;
+      'Failed to download song'.showErrorAlert();
+    }
+  }
+
+  void _internetChecker() {
+    connection.onConnectivityChanged.listen((event) {
+      if (event.contains(ConnectivityResult.mobile) ||
+          event.contains(ConnectivityResult.ethernet) ||
+          event.contains(ConnectivityResult.wifi)) {
+        hasInternet.value = true;
+      } else {
+        hasInternet.value = false;
+      }
+    });
+  }
+
+  /// Add songs in queue
+  void addSongsToQueue(List<DbSongModel> songs) {
+    final item = songs.map(_songToMediaItem).toList();
+    audioPlayer?.addQueueItems(item);
+    'songs added in queue'.showSuccessAlert();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.detached:
+        audioPlayer?.stop();
+        if (Platform.isAndroid) {
+          SystemNavigator.pop();
+        } else if (Platform.isIOS) {
+          exit(0);
+        }
+      case _:
+        'do nothing on other state'.logD;
     }
   }
 }

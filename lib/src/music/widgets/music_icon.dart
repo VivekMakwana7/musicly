@@ -34,15 +34,20 @@ class MusicIcon extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: SizedBox.square(
         dimension: size,
-        child: ClipOval(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: const Color(0xFF282C30),
-              borderRadius: BorderRadius.circular(26.r),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-            ),
-            child: Center(child: icon),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF282C30),
+            borderRadius: BorderRadius.circular(40.r),
+            border: const Border(top: BorderSide(color: Color(0xFF424750), width: 0.5)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF101012).withValues(alpha: 0.3),
+                blurRadius: 10,
+                offset: const Offset(-8, -8),
+              ),
+            ],
           ),
+          child: Center(child: icon),
         ),
       ),
     );

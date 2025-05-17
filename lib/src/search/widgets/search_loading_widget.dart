@@ -15,6 +15,7 @@ class SearchLoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         children: [
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -32,6 +33,7 @@ class SearchLoadingWidget extends StatelessWidget {
                         description: 'song.description',
                         songImageURL: 'https://c.saavncdn.com/editorial/DoodhchPatti_20250311120650_500x500.jpg',
                         title: 'song.title',
+                        action: SizedBox.shrink(),
                       ),
                     );
                   },
