@@ -21,12 +21,14 @@ class AlbumDetailCubit extends Cubit<AlbumDetailState> {
 
   /// For get album detail
   final String albumId;
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   Future<void> _getAlbumDetails() async {
     'albumId : $albumId'.logD;
     emit(state.copyWith(apiState: ApiState.loading));
-    final res = await _searchRepo.searchAlbumById(ApiRequest(params: {'id': albumId}));
+    final res = await _searchRepo.searchAlbumById(
+      ApiRequest(params: {'id': albumId}),
+    );
 
     res.when(
       success: (data) {

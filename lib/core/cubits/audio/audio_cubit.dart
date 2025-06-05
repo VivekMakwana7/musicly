@@ -29,7 +29,7 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
   }
 
-  late final _homeManager = AppDB.homeManager;
+  late final HomeManager _homeManager = AppDB.homeManager;
 
   /// Handles changes in the player state (playing/paused).
   void handlePlayerStateChange(PlayerState playerState) {

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/models/song/db_song_model.dart';
 
@@ -10,5 +11,6 @@ class DownloadCubit extends Cubit<DownloadState> {
   DownloadCubit() : super(const DownloadState());
 
   ///
-  final downloadStream = AppDB.downloadManager.downloadedSongStream();
+  final Stream<BoxEvent> downloadStream =
+      AppDB.downloadManager.downloadedSongStream();
 }

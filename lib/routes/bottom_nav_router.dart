@@ -1,6 +1,6 @@
 part of 'app_router.dart';
 
-final _bottomNavBranches =
+final List<StatefulShellBranch> _bottomNavBranches =
     BottomNavMenu.values
         .map(
           (e) => StatefulShellBranch(

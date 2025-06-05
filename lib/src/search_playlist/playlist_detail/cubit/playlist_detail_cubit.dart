@@ -15,18 +15,21 @@ part 'playlist_detail_state.dart';
 /// For handler [PlaylistDetailPage]'s state
 class PlaylistDetailCubit extends Cubit<PlaylistDetailState> {
   /// Playlist Detail Cubit constructor
-  PlaylistDetailCubit({required this.playlistId}) : super(const PlaylistDetailState()) {
+  PlaylistDetailCubit({required this.playlistId})
+    : super(const PlaylistDetailState()) {
     _getPlaylistDetail();
   }
 
   /// For get playlist details
   final String playlistId;
 
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   Future<void> _getPlaylistDetail() async {
     emit(state.copyWith(apiState: ApiState.loading));
-    final res = await _searchRepo.searchPlaylistById(ApiRequest(params: {'id': playlistId}));
+    final res = await _searchRepo.searchPlaylistById(
+      ApiRequest(params: {'id': playlistId}),
+    );
 
     res.when(
       success: (data) {

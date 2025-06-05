@@ -20,8 +20,8 @@ class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
   /// For search albums
   final String? query;
 
-  final _searchManager = AppDB.searchManager;
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final SearchManager _searchManager = AppDB.searchManager;
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   @override
   ApiState get apiState => state.apiState;
@@ -32,13 +32,25 @@ class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
   @override
   Future<void> getData() async {
     if (query != null) {
-      emit(state.copyWith(apiState: state.albums.isEmpty ? ApiState.loading : ApiState.loadingMore));
+      emit(
+        state.copyWith(
+          apiState:
+              state.albums.isEmpty ? ApiState.loading : ApiState.loadingMore,
+        ),
+      );
       final param = {'query': query, 'page': page, 'limit': limit};
-      final res = await _searchRepo.searchAlbumByQuery(ApiRequest(params: param));
+      final res = await _searchRepo.searchAlbumByQuery(
+        ApiRequest(params: param),
+      );
       res.when(
         success: (data) {
           hasMoreData = data.results?.isNotEmpty ?? false;
-          emit(state.copyWith(apiState: ApiState.success, albums: [...state.albums, ...?data.results]));
+          emit(
+            state.copyWith(
+              apiState: ApiState.success,
+              albums: [...state.albums, ...?data.results],
+            ),
+          );
           'param : ${state.albums.length}'.logD;
         },
         error: (exception) {
@@ -48,7 +60,12 @@ class SearchAlbumCubit extends PaginatedCubit<SearchAlbumState> {
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, albums: _searchManager.searchedAlbums));
+      emit(
+        state.copyWith(
+          apiState: ApiState.success,
+          albums: _searchManager.searchedAlbums,
+        ),
+      );
     }
   }
 }

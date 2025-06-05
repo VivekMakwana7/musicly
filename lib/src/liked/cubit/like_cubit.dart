@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/src/liked/liked_page.dart';
 
@@ -11,19 +12,22 @@ class LikeCubit extends Cubit<LikeState> {
   LikeCubit() : super(LikeState()) {
     checkIsLikedEmpty();
   }
-  final _likedManager = AppDB.likedManager;
+
+  final LikedManager _likedManager = AppDB.likedManager;
 
   /// Stream for liked song update
-  late final likedSongStream = _likedManager.likedSongStream();
+  late final Stream<BoxEvent> likedSongStream = _likedManager.likedSongStream();
 
   /// Stream for Liked Album Update
-  late final likedAlbumStream = _likedManager.likedAlbumStream();
+  late final Stream<BoxEvent> likedAlbumStream =
+      _likedManager.likedAlbumStream();
 
   /// Stream for Liked Playlist Update
-  late final likedPlaylistStream = _likedManager.likedPlaylistStream();
+  late final Stream<BoxEvent> likedPlaylistStream =
+      _likedManager.likedPlaylistStream();
 
   /// For check if liked page is empty
-  final isLikedEmpty = ValueNotifier(true);
+  final ValueNotifier<bool> isLikedEmpty = ValueNotifier(true);
 
   /// Listener for check all available liked stream and decide weather is liked empty or not
   void checkIsLikedEmpty() {

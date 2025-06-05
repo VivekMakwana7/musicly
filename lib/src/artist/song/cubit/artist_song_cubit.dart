@@ -19,7 +19,7 @@ class ArtistSongCubit extends PaginatedCubit<ArtistSongState> {
   /// For get Artist Song  list
   final String artistId;
 
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   ///
   int _page = 0;
@@ -38,7 +38,11 @@ class ArtistSongCubit extends PaginatedCubit<ArtistSongState> {
 
   @override
   Future<void> getData() async {
-    emit(state.copyWith(apiState: state.songs.isEmpty ? ApiState.loading : ApiState.loadingMore));
+    emit(
+      state.copyWith(
+        apiState: state.songs.isEmpty ? ApiState.loading : ApiState.loadingMore,
+      ),
+    );
     final param = {
       'page': page,
       'sortBy': 'popularity',
@@ -47,12 +51,20 @@ class ArtistSongCubit extends PaginatedCubit<ArtistSongState> {
       // 'desc'
     };
     'artistId : $artistId'.logD;
-    final res = await _searchRepo.getArtistSong(artistId, ApiRequest(params: param));
+    final res = await _searchRepo.getArtistSong(
+      artistId,
+      ApiRequest(params: param),
+    );
     res.when(
       success: (data) {
         'data : ${data.songs?.map((e) => e.id).toList()}'.logD;
         hasMoreData = data.songs?.isNotEmpty ?? false;
-        emit(state.copyWith(apiState: ApiState.success, songs: [...state.songs, ...?data.songs]));
+        emit(
+          state.copyWith(
+            apiState: ApiState.success,
+            songs: [...state.songs, ...?data.songs],
+          ),
+        );
       },
       error: (exception) {
         'Artist song API failed : $exception'.logE;

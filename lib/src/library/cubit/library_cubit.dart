@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/db/models/song_playlist/db_song_playlist_model.dart';
 import 'package:musicly/core/extensions/ext_string_alert.dart';
@@ -16,7 +17,8 @@ class LibraryCubit extends Cubit<LibraryState> {
   final playlistController = TextEditingController();
 
   /// Playlist Stream
-  late final playlistStream = AppDB.playlistManager.songPlaylistStream();
+  late final Stream<BoxEvent> playlistStream =
+      AppDB.playlistManager.songPlaylistStream();
 
   @override
   Future<void> close() {
@@ -30,7 +32,8 @@ class LibraryCubit extends Cubit<LibraryState> {
       final list = AppDB.playlistManager.songPlaylist.toList();
       final model = DbSongPlaylistModel(
         name: playlistController.text.trim(),
-        id: '${playlistController.text.trim()[0]}${DateTime.now().millisecondsSinceEpoch}',
+        id:
+            '${playlistController.text.trim()[0]}${DateTime.now().millisecondsSinceEpoch}',
         image: 'https://static.saavncdn.com/_i/share-image-2.png',
         songs: [],
       );

@@ -20,7 +20,7 @@ class SearchSongCubit extends PaginatedCubit<SearchSongState> {
   /// For search songs
   final String? query;
 
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   @override
   ApiState get apiState => state.apiState;
@@ -30,13 +30,25 @@ class SearchSongCubit extends PaginatedCubit<SearchSongState> {
     // Case query is not equal to null means Search data from Server
     // Other wise Search song page open for search from Local database
     if (query != null) {
-      emit(state.copyWith(apiState: state.songs.isEmpty ? ApiState.loading : ApiState.loadingMore));
+      emit(
+        state.copyWith(
+          apiState:
+              state.songs.isEmpty ? ApiState.loading : ApiState.loadingMore,
+        ),
+      );
       final param = {'query': query, 'page': page, 'limit': limit};
-      final res = await _searchRepo.searchSongByQuery(ApiRequest(params: param));
+      final res = await _searchRepo.searchSongByQuery(
+        ApiRequest(params: param),
+      );
       res.when(
         success: (data) {
           hasMoreData = data.results?.isNotEmpty ?? false;
-          emit(state.copyWith(apiState: ApiState.success, songs: [...state.songs, ...?data.results]));
+          emit(
+            state.copyWith(
+              apiState: ApiState.success,
+              songs: [...state.songs, ...?data.results],
+            ),
+          );
         },
         error: (exception) {
           'Search song by Query API failed : $exception'.logE;
@@ -45,7 +57,12 @@ class SearchSongCubit extends PaginatedCubit<SearchSongState> {
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, songs: AppDB.searchManager.searchedSongs));
+      emit(
+        state.copyWith(
+          apiState: ApiState.success,
+          songs: AppDB.searchManager.searchedSongs,
+        ),
+      );
     }
   }
 }

@@ -19,7 +19,7 @@ class ArtistAlbumCubit extends PaginatedCubit<ArtistAlbumState> {
   /// For get Artist Album list
   final String artistId;
 
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   ///
   int _page = 0;
@@ -41,7 +41,12 @@ class ArtistAlbumCubit extends PaginatedCubit<ArtistAlbumState> {
 
   @override
   Future<void> getData() async {
-    emit(state.copyWith(apiState: state.albums.isEmpty ? ApiState.loading : ApiState.loadingMore));
+    emit(
+      state.copyWith(
+        apiState:
+            state.albums.isEmpty ? ApiState.loading : ApiState.loadingMore,
+      ),
+    );
     final param = {
       'page': page,
       'sortBy': 'popularity',
@@ -49,11 +54,19 @@ class ArtistAlbumCubit extends PaginatedCubit<ArtistAlbumState> {
       'sortOrder': 'asc',
       // 'desc'
     };
-    final res = await _searchRepo.getArtistAlbum(artistId, ApiRequest(params: param));
+    final res = await _searchRepo.getArtistAlbum(
+      artistId,
+      ApiRequest(params: param),
+    );
     res.when(
       success: (data) {
         hasMoreData = data.albums?.isNotEmpty ?? false;
-        emit(state.copyWith(apiState: ApiState.success, albums: [...state.albums, ...?data.albums]));
+        emit(
+          state.copyWith(
+            apiState: ApiState.success,
+            albums: [...state.albums, ...?data.albums],
+          ),
+        );
         'state : ${state.albums.length}'.logD;
       },
       error: (exception) {

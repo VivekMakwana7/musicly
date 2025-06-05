@@ -17,11 +17,11 @@ class SearchArtistCubit extends PaginatedCubit<SearchArtistState> {
   /// Default constructor
   SearchArtistCubit({this.query}) : super(const SearchArtistState());
 
-  /// The search query used to find these artist (if applicable).
+  /// The search query used to find these artists (if applicable).
   final String? query;
 
-  final _searchManager = AppDB.searchManager;
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final SearchManager _searchManager = AppDB.searchManager;
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   @override
   ApiState get apiState => state.apiState;
@@ -32,14 +32,26 @@ class SearchArtistCubit extends PaginatedCubit<SearchArtistState> {
   @override
   Future<void> getData() async {
     if (query != null) {
-      emit(state.copyWith(apiState: state.artists.isEmpty ? ApiState.loading : ApiState.loadingMore));
+      emit(
+        state.copyWith(
+          apiState:
+              state.artists.isEmpty ? ApiState.loading : ApiState.loadingMore,
+        ),
+      );
       final param = {'query': query, 'page': page, 'limit': limit};
-      final res = await _searchRepo.searchArtistByQuery(ApiRequest(params: param));
+      final res = await _searchRepo.searchArtistByQuery(
+        ApiRequest(params: param),
+      );
 
       res.when(
         success: (data) {
           hasMoreData = data.results?.isNotEmpty ?? false;
-          emit(state.copyWith(apiState: ApiState.success, artists: [...state.artists, ...?data.results]));
+          emit(
+            state.copyWith(
+              apiState: ApiState.success,
+              artists: [...state.artists, ...?data.results],
+            ),
+          );
         },
         error: (exception) {
           exception.message.showErrorAlert();
@@ -48,7 +60,12 @@ class SearchArtistCubit extends PaginatedCubit<SearchArtistState> {
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, artists: _searchManager.searchedArtists));
+      emit(
+        state.copyWith(
+          apiState: ApiState.success,
+          artists: _searchManager.searchedArtists,
+        ),
+      );
     }
   }
 }

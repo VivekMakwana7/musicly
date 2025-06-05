@@ -11,7 +11,7 @@ import 'package:pkg_dio/pkg_dio.dart';
 class Injector {
   const Injector._();
 
-  static final _injector = GetIt.instance;
+  static final GetIt _injector = GetIt.instance;
 
   /// GetIt Instance
   static GetIt get instance => _injector;

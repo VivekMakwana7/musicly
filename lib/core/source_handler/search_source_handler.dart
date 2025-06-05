@@ -2,7 +2,7 @@ part of 'source_handler.dart';
 
 /// Handles retrieving songs from a general search.
 class SearchSourceHandler extends SourceHandler {
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
   bool _hasMoreResult = true;
 
   @override
@@ -10,7 +10,10 @@ class SearchSourceHandler extends SourceHandler {
 
   @override
   Future<SourceData> getSearchSongData({int page = 1, String? query}) async {
-    final searchResult = await _fetchSearchSongsFromNetwork(page: page, query: query ?? '');
+    final searchResult = await _fetchSearchSongsFromNetwork(
+      page: page,
+      query: query ?? '',
+    );
     'searchResult : ${searchResult.length}'.logD;
     return SourceData(
       songs: searchResult,
@@ -22,12 +25,17 @@ class SearchSourceHandler extends SourceHandler {
     );
   }
 
-  Future<List<DbSongModel>> _fetchSearchSongsFromNetwork({required int page, required String query}) async {
+  Future<List<DbSongModel>> _fetchSearchSongsFromNetwork({
+    required int page,
+    required String query,
+  }) async {
     if (_hasMoreResult) {
       var songs = <DbSongModel>[];
       final param = {'query': query, 'page': page, 'limit': 10};
       'param : $param'.logD;
-      final res = await _searchRepo.searchSongByQuery(ApiRequest(params: param));
+      final res = await _searchRepo.searchSongByQuery(
+        ApiRequest(params: param),
+      );
       res.when(
         success: (data) {
           _hasMoreResult = data.results?.isNotEmpty ?? false;

@@ -12,25 +12,32 @@ class HomeCubit extends Cubit<HomeState> {
     _songListener();
   }
 
-  final _likeManager = AppDB.likedManager;
-  final _homeManager = AppDB.homeManager;
+  final LikedManager _likeManager = AppDB.likedManager;
+  final HomeManager _homeManager = AppDB.homeManager;
 
   /// Stream for liked song update
   late final Stream<BoxEvent> likedSongStream = _likeManager.likedSongStream();
 
   /// Stream for Recent Played Song Update
-  late final Stream<BoxEvent> recentPlayedStream = _homeManager.recentPlayedSongStream();
+  late final Stream<BoxEvent> recentPlayedStream =
+      _homeManager.recentPlayedSongStream();
 
   /// It indicates the either Home Screen is empty or has data
-  final isHomeEmpty = ValueNotifier(true);
+  final ValueNotifier<bool> isHomeEmpty = ValueNotifier(true);
 
   void _songListener() {
-    isHomeEmpty.value = _likeManager.likedSongs.isEmpty && _homeManager.recentPlayedSongs.isEmpty;
+    isHomeEmpty.value =
+        _likeManager.likedSongs.isEmpty &&
+        _homeManager.recentPlayedSongs.isEmpty;
     likedSongStream.listen((event) {
-      isHomeEmpty.value = _likeManager.likedSongs.isEmpty && _homeManager.recentPlayedSongs.isEmpty;
+      isHomeEmpty.value =
+          _likeManager.likedSongs.isEmpty &&
+          _homeManager.recentPlayedSongs.isEmpty;
     });
     recentPlayedStream.listen((event) {
-      isHomeEmpty.value = _likeManager.likedSongs.isEmpty && _homeManager.recentPlayedSongs.isEmpty;
+      isHomeEmpty.value =
+          _likeManager.likedSongs.isEmpty &&
+          _homeManager.recentPlayedSongs.isEmpty;
     });
   }
 }

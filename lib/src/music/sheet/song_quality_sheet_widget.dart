@@ -17,10 +17,14 @@ class SongQualitySheetWidget extends StatefulWidget {
   State<SongQualitySheetWidget> createState() => _SongQualitySheetWidgetState();
 
   /// For show sheet
-  static void show(BuildContext context, {void Function(String quality)? onDownloadTap}) {
+  static void show(
+    BuildContext context, {
+    void Function(String quality)? onDownloadTap,
+  }) {
     showModalBottomSheet<dynamic>(
       context: context,
       scrollControlDisabledMaxHeightRatio: 0.95,
+      useRootNavigator: true,
       builder: (context) {
         return SongQualitySheetWidget(onDownloadTap: onDownloadTap);
       },
@@ -30,7 +34,8 @@ class SongQualitySheetWidget extends StatefulWidget {
 
 class _SongQualitySheetWidgetState extends State<SongQualitySheetWidget> {
   String selectedQuality = AppDB.settingManager.songQuality ?? '96kbps';
-  late final qualities = widget.onDownloadTap != null ? downloadQualities : streamQualities;
+  late final List<SongQuality> qualities =
+      widget.onDownloadTap != null ? downloadQualities : streamQualities;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,11 @@ class _SongQualitySheetWidgetState extends State<SongQualitySheetWidget> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Choose song quality', overflow: TextOverflow.ellipsis, style: context.textTheme.titleLarge),
+                Text(
+                  'Choose song quality',
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.titleLarge,
+                ),
                 SizedBox(height: 12.h),
                 if (widget.onDownloadTap != null)
                   const Text(
@@ -80,12 +89,18 @@ class _SongQualitySheetWidgetState extends State<SongQualitySheetWidget> {
                             ),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 14.h,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(qualities[index].quality, style: context.textTheme.titleMedium),
+                                Text(
+                                  qualities[index].quality,
+                                  style: context.textTheme.titleMedium,
+                                ),
                                 Text(
                                   qualities[index].message,
                                   style: context.textTheme.bodyMedium?.copyWith(
@@ -144,19 +159,46 @@ class SongQuality {
 const List<SongQuality> streamQualities = [
   SongQuality(
     quality: '12kbps',
-    message: 'Extreme data saver. Sound quality is significantly reduced. Best for very limited data.',
+    message:
+        'Extreme data saver. Sound quality is significantly reduced. Best for very limited data.',
   ),
-  SongQuality(quality: '48kbps', message: 'Lower quality. Good for limited mobile data.'),
-  SongQuality(quality: '96kbps', message: 'Balanced. Good for everyday listening.'),
-  SongQuality(quality: '160kbps', message: 'Solid audio quality. Enjoy richer sound, but it will use more data.'),
-  SongQuality(quality: '320kbps', message: 'Premium audio. Near-perfect sound quality, but it will use more data'),
+  SongQuality(
+    quality: '48kbps',
+    message: 'Lower quality. Good for limited mobile data.',
+  ),
+  SongQuality(
+    quality: '96kbps',
+    message: 'Balanced. Good for everyday listening.',
+  ),
+  SongQuality(
+    quality: '160kbps',
+    message:
+        'Solid audio quality. Enjoy richer sound, but it will use more data.',
+  ),
+  SongQuality(
+    quality: '320kbps',
+    message:
+        'Premium audio. Near-perfect sound quality, but it will use more data',
+  ),
 ];
 
 /// List of Download Qualities
 const List<SongQuality> downloadQualities = [
-  SongQuality(quality: '12kbps', message: 'Data saver and uses less storage space. Lowest quality.'),
-  SongQuality(quality: '48kbps', message: 'Good for limited mobile data or device storage. Low quality.'),
-  SongQuality(quality: '96kbps', message: 'Balanced. Good for everyday listening.'),
-  SongQuality(quality: '160kbps', message: 'Enjoy richer sound. Higher quality.'),
+  SongQuality(
+    quality: '12kbps',
+    message: 'Data saver and uses less storage space. Lowest quality.',
+  ),
+  SongQuality(
+    quality: '48kbps',
+    message: 'Good for limited mobile data or device storage. Low quality.',
+  ),
+  SongQuality(
+    quality: '96kbps',
+    message: 'Balanced. Good for everyday listening.',
+  ),
+  SongQuality(
+    quality: '160kbps',
+    message: 'Enjoy richer sound. Higher quality.',
+  ),
   SongQuality(quality: '320kbps', message: 'Best quality. Premium audio.'),
 ];

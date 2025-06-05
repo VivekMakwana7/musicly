@@ -15,18 +15,21 @@ part 'artist_detail_state.dart';
 /// For handler [ArtistDetailPage]'s state
 class ArtistDetailCubit extends Cubit<ArtistDetailState> {
   /// Artist Detail Cubit constructor
-  ArtistDetailCubit({required this.artistId}) : super(const ArtistDetailState()) {
+  ArtistDetailCubit({required this.artistId})
+    : super(const ArtistDetailState()) {
     _getArtistDetail();
   }
 
   /// For get Artist details
   final String artistId;
 
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   Future<void> _getArtistDetail() async {
     emit(state.copyWith(apiState: ApiState.loading));
-    final res = await _searchRepo.searchArtistById(ApiRequest(pathParameter: artistId));
+    final res = await _searchRepo.searchArtistById(
+      ApiRequest(pathParameter: artistId),
+    );
 
     res.when(
       success: (data) {

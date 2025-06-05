@@ -1,6 +1,6 @@
 part of 'theme.dart';
 
-final _lightTextTheme = TextTheme(
+final TextTheme _lightTextTheme = TextTheme(
   labelSmall: _textStyle,
   labelMedium: _textStyle.copyWith(fontSize: 12.sp),
   labelLarge: _textStyle.copyWith(fontSize: 14.sp, letterSpacing: 0.1),
@@ -58,7 +58,7 @@ final _lightTextTheme = TextTheme(
   ),
 );
 
-final _darkTextTheme = TextTheme(
+final TextTheme _darkTextTheme = TextTheme(
   labelSmall: _textStyle,
   labelMedium: _textStyle.copyWith(fontSize: 12.sp),
   labelLarge: _textStyle.copyWith(fontSize: 14.sp, letterSpacing: 0.1),
@@ -116,23 +116,23 @@ final _darkTextTheme = TextTheme(
   ),
 );
 
-final _textStyle = TextStyle(
+final TextStyle _textStyle = TextStyle(
   fontSize: 14.sp,
   letterSpacing: 0.5,
   fontWeight: mediumFontWeight,
 );
 
 /// Light font weight constant (300)
-const lightFontWeight = FontWeight.w300;
+const FontWeight lightFontWeight = FontWeight.w300;
 
 /// Regular font weight constant (400)
-const regularFontWeight = FontWeight.w400;
+const FontWeight regularFontWeight = FontWeight.w400;
 
 /// Medium font weight constant (500)
-const mediumFontWeight = FontWeight.w500;
+const FontWeight mediumFontWeight = FontWeight.w500;
 
 /// Semi-bold font weight constant (600)
-const semiBoldFontWeight = FontWeight.w600;
+const FontWeight semiBoldFontWeight = FontWeight.w600;
 
 /// Bold font weight constant (700)
-const boldFontWeight = FontWeight.w700;
+const FontWeight boldFontWeight = FontWeight.w700;

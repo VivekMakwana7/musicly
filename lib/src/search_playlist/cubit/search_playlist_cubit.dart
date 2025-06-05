@@ -20,7 +20,7 @@ class SearchPlaylistCubit extends PaginatedCubit<SearchPlaylistState> {
   /// For API call
   final String? query;
 
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
 
   @override
   ApiState get apiState => state.apiState;
@@ -29,14 +29,26 @@ class SearchPlaylistCubit extends PaginatedCubit<SearchPlaylistState> {
   Future<void> getData() async {
     'query : $query'.logD;
     if (query != null) {
-      emit(state.copyWith(apiState: state.playlists.isEmpty ? ApiState.loading : ApiState.loadingMore));
+      emit(
+        state.copyWith(
+          apiState:
+              state.playlists.isEmpty ? ApiState.loading : ApiState.loadingMore,
+        ),
+      );
       final param = {'query': query, 'limit': limit, 'page': page};
-      final res = await _searchRepo.searchPlaylistByQuery(ApiRequest(params: param));
+      final res = await _searchRepo.searchPlaylistByQuery(
+        ApiRequest(params: param),
+      );
 
       res.when(
         success: (data) {
           hasMoreData = data.results?.isNotEmpty ?? false;
-          emit(state.copyWith(apiState: ApiState.success, playlists: [...state.playlists, ...?data.results]));
+          emit(
+            state.copyWith(
+              apiState: ApiState.success,
+              playlists: [...state.playlists, ...?data.results],
+            ),
+          );
         },
         error: (exception) {
           'Search Playlist by Query API failed : $exception'.logE;
@@ -45,7 +57,12 @@ class SearchPlaylistCubit extends PaginatedCubit<SearchPlaylistState> {
         },
       );
     } else {
-      emit(state.copyWith(apiState: ApiState.success, playlists: AppDB.searchManager.searchedPlaylists));
+      emit(
+        state.copyWith(
+          apiState: ApiState.success,
+          playlists: AppDB.searchManager.searchedPlaylists,
+        ),
+      );
     }
   }
 }

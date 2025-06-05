@@ -12,16 +12,18 @@ import 'package:musicly/repos/music_repo.dart';
 /// Provides methods for handling database operations such as adding search history
 /// and managing liked songs.
 class DatabaseHandler {
-  static final _searchManager = AppDB.searchManager;
-  static final _likeManager = AppDB.likedManager;
-  static final _downloadManager = AppDB.downloadManager;
+  static final SearchManager _searchManager = AppDB.searchManager;
+  static final LikedManager _likeManager = AppDB.likedManager;
+  static final DownloadManager _downloadManager = AppDB.downloadManager;
 
   ///
   static Future<DbSongModel?> getSongById(String songId) async {
     final searchRepo = Injector.instance<MusicRepo>();
     DbSongModel? song;
     'Searching song by id : $songId'.logD;
-    final res = await searchRepo.searchSongById(ApiRequest(pathParameter: songId));
+    final res = await searchRepo.searchSongById(
+      ApiRequest(pathParameter: songId),
+    );
 
     res.when(
       success: (data) {
@@ -69,7 +71,10 @@ class DatabaseHandler {
       'Artist with ID ${artist.id} is already in the search history.'.logD;
       return;
     }
-    _searchManager.searchedArtists = [artist, ..._searchManager.searchedArtists];
+    _searchManager.searchedArtists = [
+      artist,
+      ..._searchManager.searchedArtists,
+    ];
     'Artist added to database : ${artist.id}'.logD;
   }
 
@@ -80,7 +85,10 @@ class DatabaseHandler {
       'Playlist with ID ${playlist.id} is already in the search history.'.logD;
       return;
     }
-    _searchManager.searchedPlaylists = [playlist, ..._searchManager.searchedPlaylists];
+    _searchManager.searchedPlaylists = [
+      playlist,
+      ..._searchManager.searchedPlaylists,
+    ];
     'Playlist added to database : ${playlist.id}'.logD;
   }
 
@@ -146,7 +154,9 @@ class DatabaseHandler {
     final searchRepo = Injector.instance<MusicRepo>();
     DbAlbumModel? album;
     'Searching Album by id : $albumId'.logD;
-    final res = await searchRepo.searchAlbumById(ApiRequest(params: {'id': albumId}));
+    final res = await searchRepo.searchAlbumById(
+      ApiRequest(params: {'id': albumId}),
+    );
 
     res.when(
       success: (data) {

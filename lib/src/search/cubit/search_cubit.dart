@@ -20,14 +20,16 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   /// Search controller
-  final searchController = TextEditingController();
-  final _searchRepo = Injector.instance<MusicRepo>();
+  final TextEditingController searchController = TextEditingController();
+  final MusicRepo _searchRepo = Injector.instance<MusicRepo>();
   CancelToken? _cancelToken;
 
-  late final PublishSubject<String> _searchTextQuery = PublishSubject();
+  late final PublishSubject<String> _searchTextQuery = PublishSubject<String>();
 
   ///
-  final isSearchedDataEmpty = ValueNotifier(AppDB.searchManager.isSearchedEmpty);
+  final ValueNotifier<bool> isSearchedDataEmpty = ValueNotifier<bool>(
+    AppDB.searchManager.isSearchedEmpty,
+  );
 
   /// Global Search
   Future<void> globalSearch() async {
@@ -39,7 +41,13 @@ class SearchCubit extends Cubit<SearchState> {
     _cancelToken = CancelToken();
 
     final request = {'query': searchController.text.trim()};
-    final res = await _searchRepo.search(ApiRequest(params: request, cancelToken: _cancelToken, hideKeyboard: false));
+    final res = await _searchRepo.search(
+      ApiRequest(
+        params: request,
+        cancelToken: _cancelToken,
+        hideKeyboard: false,
+      ),
+    );
 
     res.when(
       success: (data) {
@@ -65,9 +73,12 @@ class SearchCubit extends Cubit<SearchState> {
 
   /// init all listener
   void _initListener() {
-    _searchTextQuery.debounceTime(const Duration(milliseconds: 500)).distinct().listen((event) {
-      globalSearch();
-    });
+    _searchTextQuery
+        .debounceTime(const Duration(milliseconds: 500))
+        .distinct()
+        .listen((event) {
+          globalSearch();
+        });
     searchController.addListener(_searchControllerListener);
     _searchPageDatabaseListener();
   }
