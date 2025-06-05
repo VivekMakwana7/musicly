@@ -14,7 +14,7 @@ class LibraryCubit extends Cubit<LibraryState> {
   LibraryCubit() : super(LibraryState());
 
   /// For add Playlist
-  final playlistController = TextEditingController();
+  final TextEditingController playlistController = TextEditingController();
 
   /// Playlist Stream
   late final Stream<BoxEvent> playlistStream =

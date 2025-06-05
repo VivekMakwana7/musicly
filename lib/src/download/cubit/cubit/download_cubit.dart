@@ -10,7 +10,7 @@ class DownloadCubit extends Cubit<DownloadState> {
   /// Download Page Constructor
   DownloadCubit() : super(const DownloadState());
 
-  ///
+  /// Stream for downloaded songs
   final Stream<BoxEvent> downloadStream =
       AppDB.downloadManager.downloadedSongStream();
 }
