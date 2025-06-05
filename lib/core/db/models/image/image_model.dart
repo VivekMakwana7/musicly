@@ -5,7 +5,7 @@ part 'image_model.freezed.dart';
 part 'image_model.g.dart';
 
 /// [ImageModel] for common use for store Image related data in database
-@Freezed(copyWith: false, toJson: false)
+@Freezed(copyWith: false)
 sealed class ImageModel extends HiveObject with _$ImageModel {
   factory ImageModel({@JsonKey(name: 'quality') String? quality, @JsonKey(name: 'url') String? url}) = _ImageModel;
 

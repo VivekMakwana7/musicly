@@ -13,6 +13,7 @@ final class AudioState {
     this.isShuffle = false,
     this.currentIndex = 1,
     this.isNextDisabled = false,
+    this.currentSource,
   });
 
   /// [AudioPlayState] of the audio
@@ -39,6 +40,9 @@ final class AudioState {
   /// For check Next Button Disabled or not
   final bool isNextDisabled;
 
+  /// Current source data for audio player
+  final SourceData? currentSource;
+
   /// Is Prev button disabled
   bool get isPrevDisabled => currentIndex == 0;
 
@@ -52,6 +56,7 @@ final class AudioState {
     int? currentIndex,
     bool? isNextDisabled,
     LoopMode? loopMode,
+    SourceData? currentSource,
   }) {
     return AudioState(
       playState: playState ?? this.playState,
@@ -62,6 +67,7 @@ final class AudioState {
       currentIndex: currentIndex ?? this.currentIndex,
       isNextDisabled: isNextDisabled ?? this.isNextDisabled,
       loopMode: loopMode ?? this.loopMode,
+      currentSource: currentSource ?? this.currentSource,
     );
   }
 }

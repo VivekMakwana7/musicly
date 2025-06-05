@@ -21,11 +21,11 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
     runZonedGuarded(
       () async {
         WidgetsFlutterBinding.ensureInitialized();
-        await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+        ]);
         await _initialization();
-
         audioPlayer = await initAudioService();
-
         runApp(await builder());
       },
       (error, stack) {
@@ -47,17 +47,27 @@ Future<void> _initialization() async {
 /// Initializes Hive for data storage.
 @pragma('vm:entry-point')
 Future<void> _initHive() async {
-  Injector.instance.registerSingletonAsync(_setupAppDirectories, instanceName: appDocDirInstanceName);
-  await Injector.instance.isReady<Directory>(instanceName: appDocDirInstanceName);
+  Injector.instance.registerSingletonAsync(
+    _setupAppDirectories,
+    instanceName: appDocDirInstanceName,
+  );
+  await Injector.instance.isReady<Directory>(
+    instanceName: appDocDirInstanceName,
+  );
 
   Hive
-    ..init(Injector.instance<Directory>(instanceName: appDocDirInstanceName).path)
+    ..init(
+      Injector.instance<Directory>(instanceName: appDocDirInstanceName).path,
+    )
     ..registerAdapters();
 }
 
 /// Retrieves the application's document or library directory based on the platform.
 Future<Directory> _setupAppDirectories() async {
-  final appDocDir = await (Platform.isAndroid ? getApplicationDocumentsDirectory() : getLibraryDirectory());
+  final appDocDir =
+      await (Platform.isAndroid
+          ? getApplicationDocumentsDirectory()
+          : getLibraryDirectory());
 
   return appDocDir;
 }

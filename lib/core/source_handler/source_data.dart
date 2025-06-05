@@ -14,7 +14,6 @@ class SourceData {
     this.artistId,
     this.playlistId,
   });
-
   /// List of Songs
   final List<DbSongModel> songs;
 

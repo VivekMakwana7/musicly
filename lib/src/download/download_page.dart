@@ -46,7 +46,7 @@ class DownloadPage extends StatelessWidget {
                     );
                   }
 
-                  return Padding(
+                  return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     child: DetailSongListingWidget(
                       songs: list,

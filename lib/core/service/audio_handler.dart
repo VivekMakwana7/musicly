@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicly/core/cubits/audio/audio_cubit.dart';
-import 'package:musicly/core/db/app_db.dart';
 import 'package:musicly/core/di/injector.dart';
 
 /// My Audio Handler
@@ -24,10 +23,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   /// Instance of Audio Player
   AudioPlayer player = Injector.instance<AudioPlayer>();
 
-  final ConcatenatingAudioSource _playlist = ConcatenatingAudioSource(
-    children: [],
-    useLazyPreparation: AppDB.settingManager.gapLess,
-  );
+  final List<AudioSource> _playlist = List.empty(growable: true);
 
   /// Function to Create an audio source from MediaItem
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
@@ -81,7 +77,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   Future<void> initSongs(List<MediaItem> songs, {required int index, bool isFromDownload = false}) async {
     // Clear the playlist & Queue if it exists
     queue.value.clear();
-    await _playlist.clear();
+    _playlist.clear();
     // Listen for playback evens and broadcast the state
     player.playbackEventStream.listen(_broadcastState);
 
@@ -90,10 +86,10 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         isFromDownload ? songs.map(_createAudioSourceDownload).toList() : songs.map(_createAudioSource).toList();
 
     // Add source to playlist
-    await _playlist.addAll(sources);
+    _playlist.addAll(sources);
 
     // set the audio source of the audio player to the Concatenating of the audio source
-    await player.setAudioSource(_playlist, initialIndex: index);
+    await player.setAudioSources(_playlist, initialIndex: index);
 
     // Add the songs to queues
     final newQueue = queue.value..addAll(songs);
@@ -202,7 +198,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     // create a list of audio sources from provided songs
     final sources = mediaItems.map(_createAudioSource).toList();
     // Append new source to existing one
-    await _playlist.addAll(sources);
+    _playlist.addAll(sources);
     // Append new queue to existing one
     final newQueue = queue.value..addAll(mediaItems);
     queue.add(newQueue);

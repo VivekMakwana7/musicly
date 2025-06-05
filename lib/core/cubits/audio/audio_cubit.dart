@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
@@ -27,22 +26,14 @@ part 'audio_state.dart';
 class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
   /// Default constructor
   AudioCubit() : super(const AudioState()) {
-    _internetChecker();
     WidgetsBinding.instance.addObserver(this);
   }
 
-  SourceData? _currentSource;
-
-  /// Connectivity Instance
-  final connection = Connectivity();
-
-  /// Its indicates has Internet
-  final hasInternet = ValueNotifier(true);
   late final _homeManager = AppDB.homeManager;
 
   /// Handles changes in the player state (playing/paused).
   void handlePlayerStateChange(PlayerState playerState) {
-    if (_currentSource != null) {
+    if (state.currentSource != null) {
       emit(
         state.copyWith(
           playState:
@@ -99,13 +90,16 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
 
   /// For seek to given positioned
   Future<void> seekToPosition(double positioned, double maxPositioned) async {
-    final positionedInMilliSeconds = (positioned * state.duration.inMilliseconds) / maxPositioned;
-    await audioPlayer?.seek(Duration(milliseconds: positionedInMilliSeconds.toInt()));
+    final positionedInMilliSeconds =
+        (positioned * state.duration.inMilliseconds) / maxPositioned;
+    await audioPlayer?.seek(
+      Duration(milliseconds: positionedInMilliSeconds.toInt()),
+    );
   }
 
   /// Play Next Song
   Future<void> playNextSong() async {
-    if (_currentSource != null) {
+    if (state.currentSource != null) {
       await _loadMoreData();
       await audioPlayer?.skipToNext();
     } else {
@@ -115,7 +109,7 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
 
   /// Play Previous Song
   Future<void> playPreviousSong() async {
-    if (_currentSource != null) {
+    if (state.currentSource != null) {
       await audioPlayer?.skipToPrevious();
     } else {
       'Source not found'.logE;
@@ -124,8 +118,10 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
 
   /// Toggle Like Song
   void toggleLikeSong({bool? isLiked}) {
-    if (_currentSource != null) {
-      final song = state.song?.copyWith(isLiked: isLiked ?? !(state.song?.isLiked ?? false));
+    if (state.currentSource != null) {
+      final song = state.song?.copyWith(
+        isLiked: isLiked ?? !(state.song?.isLiked ?? false),
+      );
       emit(state.copyWith(song: song));
       if (isLiked == null) DatabaseHandler.toggleLikedSong(song!);
     } else {
@@ -147,7 +143,11 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
 
   /// Toggle Shuffle Song
   Future<void> toggleShuffleSong() async {
-    await audioPlayer?.setShuffleMode(state.isShuffle ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none);
+    await audioPlayer?.setShuffleMode(
+      state.isShuffle
+          ? AudioServiceShuffleMode.all
+          : AudioServiceShuffleMode.none,
+    );
   }
 
   /// For check Like
@@ -168,7 +168,6 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
     String? artistId,
     String? playlistId,
   }) async {
-    _currentSource = null;
     emit(state.copyWith(playState: AudioPlayState.loading));
     'Assigning new source and play song\nSource data : [$type]\nSong will play: $songId\nSearch Query: $query\nPage number : $page'
         .logD;
@@ -176,7 +175,7 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
       'Load Sources : ${songs.map((e) => e.id).toList()}'.logD;
     }
 
-    _currentSource =
+    final newSource =
         songs.isEmpty
             ? await _getSourceData(
               type,
@@ -197,9 +196,13 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
               albumId: albumId,
               isPaginated: isPaginated,
             );
-    if (_currentSource != null) {
-      final songIndex = _currentSource!.songs.indexWhere((element) => element.id == songId);
-      'songIndex : $songIndex || ${_currentSource!.songs.map((e) => e.id).toList()}'.logD;
+    emit(state.copyWith(currentSource: newSource));
+    if (state.currentSource != null) {
+      final songIndex = state.currentSource!.songs.indexWhere(
+        (element) => element.id == songId,
+      );
+      'songIndex : $songIndex || ${state.currentSource!.songs.map((e) => e.id).toList()}'
+          .logD;
 
       await _setSource(songIndex, isFromLoadSource: true);
     } else {
@@ -210,39 +213,44 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
 
   /// Sets the audio source and starts playing the song at the given index.
   Future<void> _setSource(int index, {bool isFromLoadSource = false}) async {
-    final songSource = _currentSource!.songs.map(_songToMediaItem).toList();
+    final songSource =
+        state.currentSource!.songs.map(_songToMediaItem).toList();
     await audioPlayer?.initSongs(
       songSource,
       index: index,
-      isFromDownload: _currentSource!.sourceType == SourceType.downloaded,
+      isFromDownload: state.currentSource!.sourceType == SourceType.downloaded,
     );
-    final song = _currentSource!.songs[index];
+    final song = state.currentSource!.songs[index];
     if (isFromLoadSource) _addSearchHistory(song);
   }
 
   /// Loads more data for paginated sources when nearing the end of the current playlist.
   Future<void> _loadMoreData() async {
-    if (_currentSource != null &&
-        _currentSource!.isPaginated &&
-        ((_currentSource!.songs.length - state.currentIndex) < 4)) {
+    if (state.currentSource != null &&
+        state.currentSource!.isPaginated &&
+        ((state.currentSource!.songs.length - state.currentIndex) < 4)) {
       final newData = await _getSourceData(
-        _currentSource!.sourceType,
-        albumId: _currentSource?.albumId,
-        playlistId: _currentSource?.playlistId,
-        query: _currentSource?.query,
-        artistId: _currentSource?.artistId,
-        page: _currentSource!.currentPage + 1,
-        isPaginated: _currentSource!.isPaginated,
+        state.currentSource!.sourceType,
+        albumId: state.currentSource?.albumId,
+        playlistId: state.currentSource?.playlistId,
+        query: state.currentSource?.query,
+        artistId: state.currentSource?.artistId,
+        page: state.currentSource!.currentPage + 1,
+        isPaginated: state.currentSource!.isPaginated,
       );
-      _currentSource = _currentSource!.copyWith(
-        songs: [..._currentSource!.songs, ...newData.songs],
+      final updatedSource = state.currentSource!.copyWith(
+        songs: [...state.currentSource!.songs, ...newData.songs],
         currentPage: newData.currentPage,
         hasMoreData: newData.hasMoreData,
       );
+      emit(state.copyWith(currentSource: updatedSource));
 
       if (newData.songs.isNotEmpty) {
         await audioPlayer?.addQueueItems(
-          List.generate(newData.songs.length, (index) => _songToMediaItem(newData.songs[index])),
+          List.generate(
+            newData.songs.length,
+            (index) => _songToMediaItem(newData.songs[index]),
+          ),
         );
       }
     }
@@ -250,18 +258,27 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
 
   /// Adds the currently played song to the search history if the source is a search result.
   void _addSearchHistory(DbSongModel song) {
-    if (_currentSource != null && _currentSource!.sourceType == SourceType.search) {
+    if (state.currentSource != null &&
+        state.currentSource!.sourceType == SourceType.search) {
       DatabaseHandler.addToSongSearchHistory(song);
     }
   }
 
   /// Initializes the state with the currently playing song's details.
   void playingSongAtIndex(int index) {
-    if (_currentSource != null) {
-      final song = _currentSource!.songs[index];
-      emit(state.copyWith(song: song, currentIndex: index, isNextDisabled: !audioPlayer!.player.hasNext));
+    if (state.currentSource != null) {
+      final song = state.currentSource!.songs[index];
+      emit(
+        state.copyWith(
+          song: song,
+          currentIndex: index,
+          isNextDisabled: !audioPlayer!.player.hasNext,
+        ),
+      );
       _checkLike(song);
-      if (_currentSource!.sourceType != SourceType.downloaded) _addToRecentPlayed(song);
+      if (state.currentSource!.sourceType != SourceType.downloaded) {
+        _addToRecentPlayed(song);
+      }
     }
   }
 
@@ -275,17 +292,30 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
     int page = 1,
     bool isPaginated = true,
   }) {
-    final handler = SourceHandler.sources.firstWhere((h) => h.sourceType == type);
+    final handler = SourceHandler.sources.firstWhere(
+      (h) => h.sourceType == type,
+    );
     return switch (type) {
       SourceType.recentPlayed ||
       SourceType.liked ||
       SourceType.searchHistory ||
       SourceType.playlist ||
       SourceType.downloaded => handler.getDatabaseData(),
-      SourceType.search => handler.getSearchSongData(query: query ?? '', page: page),
-      SourceType.searchAlbum => handler.getAlbumSongData(albumId: albumId!, page: page),
-      SourceType.searchArtist => handler.getArtistSongData(artistId: artistId!, page: page),
-      SourceType.searchPlaylist => handler.getPlaylistSongData(playlistId: playlistId!),
+      SourceType.search => handler.getSearchSongData(
+        query: query ?? '',
+        page: page,
+      ),
+      SourceType.searchAlbum => handler.getAlbumSongData(
+        albumId: albumId!,
+        page: page,
+      ),
+      SourceType.searchArtist => handler.getArtistSongData(
+        artistId: artistId!,
+        page: page,
+      ),
+      SourceType.searchPlaylist => handler.getPlaylistSongData(
+        playlistId: playlistId!,
+      ),
     };
   }
 
@@ -300,14 +330,21 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
       id: song.audioUrl ?? '',
       album: song.album?.name ?? '',
       title: song.name ?? '',
-      artist: (song.artists?.primary ?? []).isNotEmpty ? song.artists?.primary?.first.name : '',
+      artist:
+          (song.artists?.primary ?? []).isNotEmpty
+              ? song.artists?.primary?.first.name
+              : '',
       artUri: Uri.parse(song.image?.last.url ?? ''),
       duration: Duration(seconds: song.duration ?? 50),
     );
   }
 
   /// For download given song
-  Future<void> downloadSong({required DbSongModel song, required String quality, bool showToast = true}) async {
+  Future<void> downloadSong({
+    required DbSongModel song,
+    required String quality,
+    bool showToast = true,
+  }) async {
     final dSong = song;
     final appDir = await getApplicationDocumentsDirectory();
     final appFolderPath = '${appDir.path}/Musicly';
@@ -333,7 +370,9 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
       await dio.download(dSong.downloadURL(quality) ?? '', filePath);
       final songFile = File(filePath);
       if (songFile.existsSync()) {
-        DatabaseHandler.addToDownloadedSongs(dSong.copyWith(devicePath: filePath));
+        DatabaseHandler.addToDownloadedSongs(
+          dSong.copyWith(devicePath: filePath),
+        );
 
         if (showToast) 'Song downloaded successfully'.showSuccessAlert();
       } else {
@@ -343,18 +382,6 @@ class AudioCubit extends Cubit<AudioState> with WidgetsBindingObserver {
       'Error downloading song: $e'.logE;
       'Failed to download song'.showErrorAlert();
     }
-  }
-
-  void _internetChecker() {
-    connection.onConnectivityChanged.listen((event) {
-      if (event.contains(ConnectivityResult.mobile) ||
-          event.contains(ConnectivityResult.ethernet) ||
-          event.contains(ConnectivityResult.wifi)) {
-        hasInternet.value = true;
-      } else {
-        hasInternet.value = false;
-      }
-    });
   }
 
   /// Add songs in queue
