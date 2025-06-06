@@ -56,7 +56,11 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
           if (player.playing) MediaControl.pause else MediaControl.play,
           if (player.hasNext) MediaControl.skipToNext,
         ],
-        systemActions: {MediaAction.seek, MediaAction.seekBackward, MediaAction.seekForward},
+        systemActions: {
+          MediaAction.seek,
+          MediaAction.seekBackward,
+          MediaAction.seekForward,
+        },
         processingState:
             const {
               ProcessingState.idle: AudioProcessingState.idle,
@@ -74,7 +78,11 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   /// Function to initialize the songs and set up the audio Player
-  Future<void> initSongs(List<MediaItem> songs, {required int index, bool isFromDownload = false}) async {
+  Future<void> initSongs(
+    List<MediaItem> songs, {
+    required int index,
+    bool isFromDownload = false,
+  }) async {
     // Clear the playlist & Queue if it exists
     queue.value.clear();
     _playlist.clear();
@@ -83,7 +91,9 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
     // create a list of audio sources from provided songs
     final sources =
-        isFromDownload ? songs.map(_createAudioSourceDownload).toList() : songs.map(_createAudioSource).toList();
+        isFromDownload
+            ? songs.map(_createAudioSourceDownload).toList()
+            : songs.map(_createAudioSource).toList();
 
     // Add source to playlist
     _playlist.addAll(sources);
@@ -184,13 +194,17 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   // Listen for shuffle changes
   void _listenShuffleChanges() {
     player.shuffleModeEnabledStream.listen((shuffleMode) {
-      Injector.instance<AudioCubit>().handleShuffleModeChange(isShuffle: shuffleMode);
+      Injector.instance<AudioCubit>().handleShuffleModeChange(
+        isShuffle: shuffleMode,
+      );
     });
   }
 
   @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
-    await player.setShuffleModeEnabled(shuffleMode == AudioServiceShuffleMode.none);
+    await player.setShuffleModeEnabled(
+      shuffleMode == AudioServiceShuffleMode.none,
+    );
   }
 
   @override
@@ -202,5 +216,6 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     // Append new queue to existing one
     final newQueue = queue.value..addAll(mediaItems);
     queue.add(newQueue);
+    await player.addAudioSources(sources);
   }
 }
